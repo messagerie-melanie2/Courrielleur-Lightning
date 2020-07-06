@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- This Source Code Form is subject to the terms of the Mozilla Public
+   - License, v. 2.0. If a copy of the MPL was not distributed with this
+   - file, You can obtain one at http://mozilla.org/MPL/2.0/. -->
+
+<?xml-stylesheet href="chrome://calendar/skin/calendar-views.css" type="text/css"?>
+<!-- CM2V6 -->
+<?xml-stylesheet href="chrome://calendar/skin/calendaragendaview.css" type="text/css"?>
+<!-- Fin CM2V6 -->
+<?xml-stylesheet href="chrome://calendar/skin/widgets/calendar-widgets.css" type="text/css"?>
+
+<!-- CM2V6 -->
+<!DOCTYPE overlay
+[
+    <!ENTITY % dtd1 SYSTEM "chrome://calendar/locale/calendar.dtd" > %dtd1;
+    <!ENTITY % dtd2 SYSTEM "chrome://global/locale/global.dtd" > %dtd2;
+	<!ENTITY % calendaragendaviewDTD SYSTEM "chrome://calendar/locale/calendaragendaview.dtd" >   %calendaragendaviewDTD;
+]>
+<!-- Fin CM2V6 -->
+
+
+<overlay id="calendar-views-overlay"
+         xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+
+    <vbox id="calendar-view-box" context="calendar-view-context-menu">
+        <hbox id="calendar-nav-control">
+            <vbox flex="1">
+               <hbox flex="1" class="navigation-inner-box" align="center">
+                  <!-- If you are extending a view, add attributes to these
+                       nodes for your view. i.e if your view has the id
+                       "foobar-view", then you need to add the attribute
+                       tooltiptext-foobar="..." -->
+                  <hbox pack="center">
+                     <!-- CM2V6 -->
+                     <toolbarbutton id="previous-view-button"
+                                    class="view-navigation-button"
+                                    type="prev"
+                                    tooltiptext-day="&calendar.navigation.prevday.tooltip;"
+                                    tooltiptext-week="&calendar.navigation.prevweek.tooltip;"
+                                    tooltiptext-multiweek="&calendar.navigation.prevweek.tooltip;"
+                                    tooltiptext-month="&calendar.navigation.prevmonth.tooltip;"
+                                    tooltiptext-agenda="&calendar.navigation.prevday.tooltip;"
+                                    command="calendar_view_prev_command"/>
+                     <!-- Fin CM2V6 -->                     
+                     <toolbarbutton id="today-view-button"
+                                    class="today-navigation-button"
+                                    label="&calendar.today.button.label;"
+                                    tooltiptext-all="&calendar.today.button.tooltip;"
+                                    command="calendar_view_today_command"/>
+                     <!-- CM2V6 -->
+                     <toolbarbutton id="next-view-button"
+                                    class="view-navigation-button"
+                                    type="next"
+                                    tooltiptext-day="&calendar.navigation.nextday.tooltip;"
+                                    tooltiptext-week="&calendar.navigation.nextweek.tooltip;"
+                                    tooltiptext-multiweek="&calendar.navigation.nextweek.tooltip;"
+                                    tooltiptext-month="&calendar.navigation.nextmonth.tooltip;"                                    
+                                    tooltiptext-agenda="&calendar.navigation.nextday.tooltip;"                                    
+                                    command="calendar_view_next_command"/>
+                    <!-- Fin CM2V6 -->
+                  </hbox>
+                  <label id="intervalDescription"
+                                 class="view-header"
+                                 crop="end"
+                                 flex="1"
+                                 pack="start"/>
+                  <spacer flex="1"/>
+                  <label id="calendarWeek"
+                         class="view-header"
+                         type="end"
+                         crop="start"/>
+               </hbox>
+            <hbox flex="1" class="navigation-bottombox"/>
+         </vbox>
+         <tabbox id="view-tabbox" pack="end">
+         	<!-- CM2V6 -->
+         	<hbox flex="1" class="navigation-inner-box" align="center">
+	          <menulist id="view-tabs" 
+                      class="calview-tabs"
+                      setfocus="true">
+              <menupopup>
+                <menuitem id="calendar-agenda-view-button"
+                          label="&calendar.agenda.button.label;" 
+                          observes="calendar_agenda-view_command"
+                          calview="agenda"
+                          flex="1"/>
+                <menuitem id="calendar-week-agenda-view-button"
+                          label="&calendar.agendaweek.button.label;" 
+                          observes="calendar_week-agenda-view_command"
+                          calview="week-agenda"
+                          flex="1"/>
+                <menuitem id="calendar-day-view-button"
+                          label="&calendar.day.button.label;" 
+                          observes="calendar_day-view_command"
+                          calview="day"
+                          flex="1"/>
+                <menuitem id="calendar-week-view-button"
+                          label="&calendar.week.button.label;" 
+                          observes="calendar_week-view_command"
+                          calview="week"
+                          flex="1"/>
+                <menuitem id="calendar-week2-agenda-view-button"
+                          label="&calendar.agendaweek2.button.label;" 
+                          observes="calendar_week2-agenda-view_command"
+                          calview="week2-agenda"
+                          flex="1"/>
+                <menuitem id="calendar-multiweek-view-button"
+                          label="&calendar.multiweek.button.label;" 
+                          observes="calendar_multiweek-view_command"
+                          calview="multiweek"
+                          flex="1"/>
+                <menuitem id="calendar-month-view-button"
+                          label="&calendar.month.button.label;" 
+                          observes="calendar_month-view_command"
+                          calview="month"
+                          flex="1"/>
+              </menupopup>
+            </menulist>
+          </hbox>
+          <!-- Fin CM2V6 -->
+            <box class="navigation-bottombox"/>
+         </tabbox>
+         <vbox>
+           <vbox flex="1" class="navigation-spacer-box"/>
+           <hbox class="navigation-bottombox"/>
+         </vbox>
+       </hbox>
+       <deck flex="1"
+            id="view-deck"
+            persist="selectedIndex">
+        <!-- Note: the "id" attributes of the calendar panes **must** follow the
+             notation 'type + "-" + "view"', where "type" should refer to the
+             displayed time period as described in base/public/calICalendarView.idl -->
+        <!-- CM2V6 -->
+        <calendar-agenda-view id="agenda-view" flex="1"
+                             context="calendar-view-context-menu"
+                             item-context="calendar-item-context-menu"/>
+        <calendar-week-agenda-view id="week-agenda-view" flex="1"
+                             context="calendar-view-context-menu"
+                             item-context="calendar-item-context-menu"/>
+        <!-- Fin CM2V6 -->
+        <calendar-day-view id="day-view" flex="1"
+                               context="calendar-view-context-menu"
+                               item-context="calendar-item-context-menu"/>
+        <!-- CM2V6 -->
+        <calendar-week-view id="week-view" flex="1"
+                             context="calendar-view-context-menu"
+                             item-context="calendar-item-context-menu"/>
+        <calendar-week2-agenda-view id="week2-agenda-view" flex="1"
+                             context="calendar-view-context-menu"
+                             item-context="calendar-item-context-menu"/>
+        <!-- Fin CM2V6 -->
+        <calendar-multiweek-view id="multiweek-view" flex="1"
+                                 context="calendar-view-context-menu"
+                                 item-context="calendar-item-context-menu"/>
+        <calendar-month-view id="month-view" flex="1"
+                             context="calendar-view-context-menu"
+                             item-context="calendar-item-context-menu"/>
+      </deck>
+    </vbox>
+</overlay>

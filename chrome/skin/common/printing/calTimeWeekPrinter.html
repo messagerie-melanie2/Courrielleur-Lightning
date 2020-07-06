@@ -1,0 +1,166 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+   "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <title id="title"/>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <style type="text/css" id="sheet">
+      #week-container {width:100%;}
+      
+      .week-template {page-break-after: always;
+                      display: grid;
+                      grid-template-rows:2 auto;
+                      grid-template-columns:1;}
+      
+      .entete { display:grid; grid-template-columns:auto 1fr auto;
+                border: 1px solid black; padding:4px;}
+
+      .agenda-libelle {color: black; font-size: 10px; padding-left:2px; padding-right:2px; border-radius:2px; margin:1px;}
+      .libelle-semaine {font-weight:bold; font-size: 16px; text-align:center; vertical-align: middle;}
+      .categories-container {display:grid; grid-column-gap:4px;}
+      .categorie-libelle {text-align:right; font-size: 10px; padding-left:2px; padding-right:2px;
+                          border-right: solid 15px; border-radius:2px;}
+
+      .conteneur-semaine {display: grid;
+                          background-color:black;
+                          border:1px solid black;
+                          grid-gap:1px;
+                          margin-top:4px;}
+
+      /* a calculer et ajouter depuis calTimeWeekPrinter.js
+      .lignes-template {grid-template-rows: [jours] auto [entier] auto t0 1fr t1 1fr etc}
+                        
+      .colonnes-template {grid-template-columns: [heures] 3em [lun] 1fr [mar] 1fr [mer] 1fr
+                                                 [jeu] 1fr [ven] 1fr [sam] 1fr [dim] 1fr;}
+      */
+
+      .jour-template {display: grid; grid-template-columns:auto; grid-row-end:-1; text-align:center;}
+
+      .bloc-heure {background-color:white; padding-left:2px; grid-column-start:heures;}
+
+      .jour {background-color:white; grid-row-start:jours; padding-left:2px; padding-right:2px;}
+
+      .libelle-jour { grid-row-end:entier; text-align:center; font-size: 11px;}
+
+      .jour-entier {grid-row-start:entier; background-color:white; min-height:10px;}
+
+      .heure {font-weight:bold; font-size: 16px;}
+      .minutes {font-size: 10px;}
+
+      .heurejour {background-color:white;}
+
+      /* calculer grid-template-rows: repeat(heures*12, 1fr); */
+      .conteneur-evenements {display: grid;grid-row-start:t0;grid-row-end:-1;background-color:transparent;}
+
+      .itemEvent {font-size: 11px; text-align: left; vertical-align:top; border-radius:2px; padding-left:2px;overflow:hidden;}
+      .item-attendees-img {width:12px; height:12px;}
+      .itemEntier {grid-row-start:entier;}
+      .item-heure {font-size: 11px; font-weight: bold;}
+
+      .out-of-week { background-color: white !important; }
+      .day-off { background-color: white !important; }
+      .taskItem { border-bottom: 1px solid #F3F3F3; }
+      .tasks { margin: 5px; }
+      .taskList { margin: 0px; list-style-image: none; list-style-type: none; padding: 0px; }
+    </style>
+  </head>
+  <body>
+    <div id="week-container"/>
+    <div id="tasks-list-box" hidden="true">
+      <h3 id="tasks-title"/>
+      <ul class="taskList" id="task-container"/>
+    </div>
+
+    <!-- Templates follow -->
+    <div id="templates" hidden="true">
+
+      <li id="task-template">
+        <input type="checkbox" class="task-checkbox" disabled="disabled"/>
+        <span class="task-title"/>
+      </li>
+
+      <div id="item-template" class="calendar-color-box itemEvent">
+        <span class="item-heure"/>
+        <span class="item-titre"/>
+        <span class="item-lieu"/>
+      </div>
+
+      <img id="itemEvent-img" class="item-attendees-img" align="right"/>
+
+      <div id="agenda-libelle" class="agenda-libelle"/>
+
+      <div id="categorie-libelle" class="categorie-libelle"/>
+
+      <div id="heurejour" class="heurejour"/>
+
+      <!-- les jours -->
+      <div id="jour" class="jour">
+        <div class="libelle-jour"/>
+      </div>
+
+      <!-- modele heures -->
+      <div id="bloc-heure" class="bloc-heure">
+          <span class="heure"></span>
+          <span class="minutes">00</span>
+      </div>
+
+      <!-- conteneur evenements jour entier -->
+      <div id="jour-entier" class="jour-entier">
+      </div>
+
+      <!-- conteneur evenements dans une journee -->
+      <div id="conteneur-evenements" class="conteneur-evenements">
+      </div>
+
+
+      <!-- conteneur d'une semaine -->
+      <div id="week-template" class="week-template">
+
+        <div class="entete">
+          <div class="agendas-container">
+          </div>
+          <div class="libelle-semaine">
+          </div>
+          <div>
+            <div class="categories-container">
+            </div>
+          </div>
+        </div>
+
+        <div  class="conteneur-semaine lignes-template colonnes-template">
+
+          <div class="heurejour" style="grid-row-start:jours;grid-row-end:t0;grid-column-start:heures;"/>
+
+          <!-- bloc heure/jour
+          <div class="bloc-heure" style="grid-row-start:h9;">
+              <span class="heure">9</span>
+              <span class="minutes">00</span>
+          </div>
+          -->
+
+          <!-- les jours
+          <div class="jour" style="grid-column-start:lun;">
+            <div class="libelle-jour">Lundi 28 Octobre</div>
+          </div>
+          -->
+
+          <!-- evenements jour entier
+          <div class="jour-entier" style="grid-column-start:lun;">
+            <div class="itemEvent itemEntier">Toute la journée</div>
+          </div>
+          -->
+
+          <!-- evenements != entiers
+          <div  class="conteneur-evenements"
+                style="grid-column-start:lun;">
+            <div class="itemEvent" style="grid-row-start:1;grid-row-end:12;" >9 a 11</div>
+          </div>
+          -->
+
+        </div>
+
+      </div>
+
+    </div>
+  </body>
+</html>

@@ -1,0 +1,306 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- ***** BEGIN LICENSE BLOCK *****
+   - Version: MPL 1.1/GPL 2.0/LGPL 2.1
+   -
+   - The contents of this file are subject to the Mozilla Public License Version
+   - 1.1 (the "License"); you may not use this file except in compliance with
+   - the License. You may obtain a copy of the License at
+   - http://www.mozilla.org/MPL/
+   -
+   - Software distributed under the License is distributed on an "AS IS" basis,
+   - WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License
+   - for the specific language governing rights and limitations under the
+   - License.
+   -
+   - The Original Code is Mozilla Lightning Preferences
+   -
+   - The Initial Developer of the Original Code is
+   - Oracle Corporation
+   - Portions created by the Initial Developer are Copyright (C) 2005
+   - the Initial Developer. All Rights Reserved.
+   -
+   - Contributor(s):
+   -   Stuart Parmenter <stuart.parmenter@oracle.com>
+   -   Matthew Willis <lilmatt@mozilla.com>
+   -   Stefan Sitter <ssitter@googlemail.com>
+   -   Gary Kwong <nth10sd@gmail.com>
+   -
+   - Alternatively, the contents of this file may be used under the terms of
+   - either the GNU General Public License Version 2 or later (the "GPL"), or
+   - the GNU Lesser General Public License Version 2.1 or later (the "LGPL"),
+   - in which case the provisions of the GPL or the LGPL are applicable instead
+   - of those above. If you wish to allow use of your version of this file only
+   - under the terms of either the GPL or the LGPL, and not to allow others to
+   - use your version of this file under the terms of the MPL, indicate your
+   - decision by deleting the provisions above and replace them with the notice
+   - and other provisions required by the LGPL or the GPL. If you do not delete
+   - the provisions above, a recipient may use your version of this file under
+   - the terms of any one of the MPL, the GPL or the LGPL.
+   -
+   - ***** END LICENSE BLOCK ***** -->
+
+<!DOCTYPE overlay SYSTEM "chrome://calendar/locale/preferences/prints.dtd">
+
+<overlay id="PrintsPaneOverlay"
+         xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+
+    <vbox id="calPreferencesBoxPrints">
+        <script type="application/javascript"
+                src="chrome://calendar/content/preferences/prints.js"/>
+        <script type="application/javascript"
+                src="chrome://calendar/content/calendar-ui-utils.js"/>
+        <script type="application/javascript"
+                src="chrome://calendar/content/calUtils.js"/>
+
+        <preferences>
+            <!-- General -->
+            <preference id="printer.meddtl.usewhitebackground"
+                        name="printer.meddtl.usewhitebackground"
+                        type="bool"/>
+            <preference id="printer.meddtl.hebdo.printhourlines"
+                        name="printer.meddtl.hebdo.printhourlines"
+                        type="bool"/>
+                        
+            <!-- Hebdo -->
+            <preference id="printer.meddtl.hebdo.printcompleteweek"
+                        name="printer.meddtl.hebdo.printcompleteweek"
+                        type="bool"/>
+            <preference id="printer.meddtl.ts.printlocation"
+                        name="printer.meddtl.ts.printlocation"
+                        type="bool"/>
+            <preference id="printer.meddtl.ts.noprinttimesinmultidayevents"
+                        name="printer.meddtl.ts.noprinttimesinmultidayevents"
+                        type="bool"/>
+            <preference id="printer.meddtl.ts.printendtime"
+                        name="printer.meddtl.ts.printendtime"
+                        type="bool"/>
+            <preference id="printer.meddtl.ts.fontsize"
+                        name="printer.meddtl.ts.fontsize"
+                        type="int"/>
+            <preference id="printer.meddtl.ts.fontsizetime"
+                        name="printer.meddtl.ts.fontsizetime"
+                        type="int"/>
+            
+            <!-- One day -->
+            <preference id="printer.meddtl.od.printlocation"
+                        name="printer.meddtl.od.printlocation"
+                        type="bool"/>
+            <preference id="printer.meddtl.od.noprinttimesinmultidayevents"
+                        name="printer.meddtl.od.noprinttimesinmultidayevents"
+                        type="bool"/>
+            <preference id="printer.meddtl.od.printendtime"
+                        name="printer.meddtl.od.printendtime"
+                        type="bool"/>
+            <preference id="printer.meddtl.od.fontsize"
+                        name="printer.meddtl.od.fontsize"
+                        type="int"/>
+            <preference id="printer.meddtl.od.fontsizetime"
+                        name="printer.meddtl.od.fontsizetime"
+                        type="int"/>
+        </preferences>
+
+        <groupbox>
+            <caption label="&pref.calendar.print.general;"/>
+
+            <hbox align="center" flex="1">
+                <checkbox id="meddtl.usewhitebackground"
+                          preference="printer.meddtl.usewhitebackground"
+                          label="&pref.calendar.print.usewhitebackground;"/>
+            </hbox>
+            <hbox align="center" flex="1">
+                <checkbox id="meddtl.hebdo.printhourlines"
+                          preference="printer.meddtl.hebdo.printhourlines"
+                          label="&pref.calendar.print.printhourlines;"/>
+            </hbox>
+        </groupbox>
+        
+        <groupbox>
+            <caption label="&pref.calendar.print.hebdo;"/>
+            
+            <grid>
+                <columns>
+                    <column/>
+                    <column flex="1"/>
+                </columns>
+                <rows>
+                    <row align="center">
+
+                      <hbox align="center" flex="1">
+                          <checkbox id="meddtl.hebdo.printcompleteweek"
+                                    preference="printer.meddtl.hebdo.printcompleteweek"
+                                    label="&pref.calendar.print.hebdo.printcompleteweek;"/>
+                      </hbox>
+                    </row>
+                    
+                    <row align="center">
+                      <hbox align="center" flex="1">
+                          <checkbox id="meddtl.ts.noprinttimesinmultidayevents"
+                                    preference="printer.meddtl.ts.noprinttimesinmultidayevents"
+                                    label="&pref.calendar.print.ts.noprinttimesinmultidayevents;"/>
+                      </hbox>
+                      <hbox align="center" flex="1">
+                          <checkbox id="meddtl.ts.printendtime"
+                                    preference="printer.meddtl.ts.printendtime"
+                                    label="&pref.calendar.print.ts.printendtime;"/>
+                      </hbox>
+                    </row>
+                    
+                    <row align="center">
+                      <hbox align="center" flex="1">
+                          <checkbox id="meddtl.ts.printlocation"
+                                    preference="printer.meddtl.ts.printlocation"
+                                    label="&pref.calendar.print.ts.printlocation;"/>
+                      </hbox>
+                    </row>
+                    
+                    <row align="center">
+                      <hbox align="center" pack="center">
+                          <label value="&pref.calendar.print.ts.fontsize;"
+                                 control="ts.fontsize"/>
+                          <menulist id="ts.fontsize"
+                                    preference="printer.meddtl.ts.fontsize">
+                              <menupopup id="ts.fontsize.popup">
+                                  <menuitem label="8"  value="8"/>
+                                  <menuitem label="9"  value="9"/>
+                                  <menuitem label="10" value="10"/>
+                                  <menuitem label="11" value="11"/>
+                                  <menuitem label="12" value="12"/>
+                                  <menuitem label="13" value="13"/>
+                                  <menuitem label="14" value="14"/>
+                                  <menuitem label="15" value="15"/>
+                                  <menuitem label="16" value="16"/>
+                                  <menuitem label="17" value="17"/>
+                                  <menuitem label="18" value="18"/>
+                                  <menuitem label="19" value="19"/>
+                                  <menuitem label="20" value="20"/>
+                                  <menuitem label="21" value="21"/>
+                                  <menuitem label="22" value="22"/>
+                                  <menuitem label="23" value="23"/>
+                                  <menuitem label="24" value="24"/>
+                              </menupopup>
+                          </menulist>
+                      </hbox>
+                      
+                      <hbox align="center" pack="center">
+                          <label value="&pref.calendar.print.ts.fontsizetime;"
+                                 control="ts.fontsizetime"/>
+                          <menulist id="ts.fontsizetime"
+                                    preference="printer.meddtl.ts.fontsizetime">
+                              <menupopup id="ts.fontsizetime.popup">
+                                  <menuitem label="8"  value="8"/>
+                                  <menuitem label="9"  value="9"/>
+                                  <menuitem label="10" value="10"/>
+                                  <menuitem label="11" value="11"/>
+                                  <menuitem label="12" value="12"/>
+                                  <menuitem label="13" value="13"/>
+                                  <menuitem label="14" value="14"/>
+                                  <menuitem label="15" value="15"/>
+                                  <menuitem label="16" value="16"/>
+                                  <menuitem label="17" value="17"/>
+                                  <menuitem label="18" value="18"/>
+                                  <menuitem label="19" value="19"/>
+                                  <menuitem label="20" value="20"/>
+                                  <menuitem label="21" value="21"/>
+                                  <menuitem label="22" value="22"/>
+                                  <menuitem label="23" value="23"/>
+                                  <menuitem label="24" value="24"/>
+                              </menupopup>
+                          </menulist>
+                      </hbox>
+                  </row>
+              </rows>
+            </grid>
+        </groupbox>
+        
+        <groupbox>
+            <caption label="&pref.calendar.print.oneday;"/>
+
+            <grid>
+                <columns>
+                    <column/>
+                    <column flex="1"/>
+                </columns>
+                <rows>
+                    <row align="center">
+
+                      <hbox align="center" flex="1">
+                          <checkbox id="meddtl.od.noprinttimesinmultidayevents"
+                                    preference="printer.meddtl.od.noprinttimesinmultidayevents"
+                                    label="&pref.calendar.print.od.noprinttimesinmultidayevents;"/>
+                      </hbox>
+                      <hbox align="center" flex="1">
+                          <checkbox id="meddtl.od.printendtime"
+                                    preference="printer.meddtl.od.printendtime"
+                                    label="&pref.calendar.print.od.printendtime;"/>
+                      </hbox>
+                    </row>
+                    
+                    <row align="center">
+                      <hbox align="center" flex="1">
+                          <checkbox id="meddtl.od.printlocation"
+                                    preference="printer.meddtl.od.printlocation"
+                                    label="&pref.calendar.print.od.printlocation;"/>
+                      </hbox>
+                    </row>
+                    
+                    <row align="center">
+                      <hbox align="center" pack="center">
+                          <label value="&pref.calendar.print.od.fontsize;"
+                                 control="od.fontsize"/>
+                          <menulist id="od.fontsize"
+                                    preference="printer.meddtl.od.fontsize">
+                              <menupopup id="od.fontsize.popup">
+                                  <menuitem label="8"  value="8"/>
+                                  <menuitem label="9"  value="9"/>
+                                  <menuitem label="10" value="10"/>
+                                  <menuitem label="11" value="11"/>
+                                  <menuitem label="12" value="12"/>
+                                  <menuitem label="13" value="13"/>
+                                  <menuitem label="14" value="14"/>
+                                  <menuitem label="15" value="15"/>
+                                  <menuitem label="16" value="16"/>
+                                  <menuitem label="17" value="17"/>
+                                  <menuitem label="18" value="18"/>
+                                  <menuitem label="19" value="19"/>
+                                  <menuitem label="20" value="20"/>
+                                  <menuitem label="21" value="21"/>
+                                  <menuitem label="22" value="22"/>
+                                  <menuitem label="23" value="23"/>
+                                  <menuitem label="24" value="24"/>
+                              </menupopup>
+                          </menulist>
+                      </hbox>
+                      
+                      <hbox align="center" pack="center">
+                          <label value="&pref.calendar.print.od.fontsizetime;"
+                                 control="od.fontsizetime"/>
+                          <menulist id="od.fontsizetime"
+                                    preference="printer.meddtl.od.fontsizetime">
+                              <menupopup id="od.fontsizetime.popup">
+                                  <menuitem label="8"  value="8"/>
+                                  <menuitem label="9"  value="9"/>
+                                  <menuitem label="10" value="10"/>
+                                  <menuitem label="11" value="11"/>
+                                  <menuitem label="12" value="12"/>
+                                  <menuitem label="13" value="13"/>
+                                  <menuitem label="14" value="14"/>
+                                  <menuitem label="15" value="15"/>
+                                  <menuitem label="16" value="16"/>
+                                  <menuitem label="17" value="17"/>
+                                  <menuitem label="18" value="18"/>
+                                  <menuitem label="19" value="19"/>
+                                  <menuitem label="20" value="20"/>
+                                  <menuitem label="21" value="21"/>
+                                  <menuitem label="22" value="22"/>
+                                  <menuitem label="23" value="23"/>
+                                  <menuitem label="24" value="24"/>
+                              </menupopup>
+                          </menulist>
+                      </hbox>
+                  </row>
+              </rows>
+            </grid>
+        </groupbox>
+
+    </vbox>
+</overlay>

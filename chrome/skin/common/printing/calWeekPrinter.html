@@ -1,0 +1,143 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+   "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <title id="title"/>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <style type="text/css" id="sheet">
+      #week-container {width:100%;}
+      .main-table { display:grid; grid-template-columns:30% 1fr 30%; border: 1px solid black; padding:4px;font-size: 26px; font-weight: bold; }
+      .days-table {margin-top:8px; border: solid 1px black; border-spacing:0; page-break-after: always;}
+      .week-number {font-weight:bold; font-size: 16px; text-align:center; }
+      .day-container {vertical-align:top; font-size:10px;}
+      .day-title {text-align:center; vertical-align:bottom;}
+      .day-name { background-color:white; border: 1px solid black; font-size: 16px; }
+      .day-box { border: 1px solid black; vertical-align: top; }
+      .out-of-month { background-color: gray !important; }
+      .day-off { background-color: #D3D3D3 !important; }
+      .taskItem { border-bottom: 1px solid #F3F3F3; }
+      .tasks { margin: 5px; }
+      .taskList { margin: 0px; list-style-image: none; list-style-type: none; padding: 0px; }
+      .agenda-libelle {overflow: hidden; color: black; font-size: 10px; padding-left:2px; border-radius:2px; margin:1px;}
+      .categories-container {display:grid; grid-column-gap:4px;}
+      .categorie-libelle {overflow: hidden; text-align:right; font-size: 10px; padding-left:2px; padding-right:2px; 
+                          border-right: solid 15px; border-radius:2px;}
+      .itemEvent {font-size: 11px;  text-align: left; vertical-align:top; border-radius:2px; padding-left:2px;}
+      .item-attendees-img {width:12px; height:12px;}
+    </style>
+  </head>
+  <body>
+    <div id="week-container"/>
+    <div id="tasks-list-box" hidden="true">
+      <h3 id="tasks-title"/>
+      <ul class="taskList" id="task-container"/>
+    </div>
+
+    <!-- Templates follow -->
+    <div id="templates" hidden="true">
+      <li id="task-template">
+        <input type="checkbox" class="task-checkbox" disabled="disabled"/>
+        <span class="task-title"/>
+      </li>
+      
+      <tr id="item-template">
+        <td width="100%" class="calendar-color-box itemEvent">
+          <span class="item-interval"/>
+          <span class="item-title"/>
+          <span class="item-lieu"/>
+        </td>
+      </tr>
+            
+      <img id="itemEvent-img" class="item-attendees-img" align="right"/>
+      
+      <div id="agenda-libelle" class="agenda-libelle"/>
+      
+      <div id="categorie-libelle" class="categorie-libelle"/>
+      
+      <div id="week-template" style="page-break-after: always;">
+      
+        <div width="100%" class="main-table">
+          <div class="agendas-container"/>
+          <div class="week-number"/>
+          <div>
+            <div class="categories-container">
+            </div>
+          </div>
+        </div>
+        
+        <table width="100%" border="1" class="days-table">
+          <tr height="33%">
+            <td width="50%" class="day-box monday-box">
+              <table class="day-name" width="100%">
+                <tr>
+                  <td class="day-title monday-title"/>
+                </tr>
+              </table>
+              <table width="100%" class="day-container monday-container"/>
+            </td>
+            <td width="50%" class="day-box thursday-box">
+              <table class="day-name" width="100%">
+                <tr>
+                  <td class="day-title thursday-title"/>
+                </tr>
+              </table>
+              <table width="100%" class="day-container thursday-container"/>
+            </td>
+          </tr>
+          <tr height="33%">
+            <td width="50%" class="day-box tuesday-box">
+              <table class="day-name" width="100%">
+                <tr>
+                  <td class="day-title tuesday-title"/>
+                </tr>
+              </table>
+              <table width="100%" class="day-container tuesday-container"/>
+            </td>
+            <td width="50%" class="day-box friday-box">
+              <table class="day-name" width="100%">
+                <tr>
+                  <td class="day-title friday-title"/>
+                </tr>
+              </table>
+              <table width="100%" class="day-container friday-container"/>
+            </td>
+          </tr>
+          <tr height="33%">
+            <td width="50%" class="day-box wednesday-box">
+              <table class="day-name" width="100%">
+                <tr>
+                  <td class="day-title wednesday-title"/>
+                </tr>
+              </table>
+              <table width="100%" class="day-container wednesday-container"/>
+            </td>
+            <td height="33%" style="padding: 0">
+              <table border="0" width="100%" height="100%">
+                <tr>
+                  <td width="50%" class="day-box saturday-box">
+                    <table class="day-name" width="100%">
+                      <tr>
+                        <td class="day-title saturday-title"/>
+                      </tr>
+                    </table>
+                    <table width="100%" class="day-container saturday-container"/>
+                  </td>
+                </tr>
+                <tr>
+                  <td width="50%" class="day-box sunday-box">
+                    <table class="day-name" width="100%">
+                      <tr>
+                        <td class="day-title sunday-title"/>
+                      </tr>
+                    </table>
+                    <table width="100%" class="day-container sunday-container"/>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+        </table>
+      </div>
+    </div>
+  </body>
+</html>

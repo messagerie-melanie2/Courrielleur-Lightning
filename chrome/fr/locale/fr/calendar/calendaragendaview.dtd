@@ -1,0 +1,22 @@
+<!ENTITY calendar.agenda.button.label "Agendas à la journée">
+<!ENTITY calendar.agenda.button.tooltip "Vue agendas">
+
+<!ENTITY calendar.agendaweek.button.label "Agendas à la semaine">
+<!ENTITY calendar.agendaweek.button.tooltip "Vue agendas à la semaine">
+
+<!ENTITY calendar.agendaweek2.button.label "Semaine d'agendas">
+<!ENTITY calendar.agendaweek2.button.tooltip "Vue semaine d'agendas">
+
+<!ENTITY calendar.agenda.button.accesskey "A">
+
+<!ENTITY calendar.agendaweek.button.accesskey "m">
+<!ENTITY calendar.agendaweek2.button.accesskey "n">
+
+
+<!ENTITY calendar.navigation.nextday.tooltip "Jour suivant">
+<!ENTITY calendar.navigation.prevday.tooltip "Jour précédent">
+
+<!ENTITY calendar.nextday.label               "Jour suivant" >
+<!ENTITY calendar.prevday.label               "Jour précédent" >
+<!ENTITY calendar.nextday.accesskey           "s" >
+<!ENTITY calendar.prevday.accesskey           "p" >

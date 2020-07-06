@@ -1,0 +1,466 @@
+<?xml version="1.0"?>
+<!-- This Source Code Form is subject to the terms of the Mozilla Public
+   - License, v. 2.0. If a copy of the MPL was not distributed with this
+   - file, You can obtain one at http://mozilla.org/MPL/2.0/.
+-->
+
+<?xml-stylesheet type="text/css" href="chrome://global/skin/global.css"?>
+<?xml-stylesheet type="text/css" href="chrome://calendar-common/skin/calendar-alarms.css"?>
+<?xml-stylesheet type="text/css" href="chrome://calendar-common/skin/calendar-attendees.css"?>
+<?xml-stylesheet type="text/css" href="chrome://calendar/skin/calendar-event-dialog.css"?>
+<?xml-stylesheet type="text/css" href="chrome://calendar-common/skin/dialogs/calendar-event-dialog.css"?>
+<?xml-stylesheet type="text/css" href="chrome://calendar/content/datetimepickers/datetimepickers.css"?>
+<?xml-stylesheet type="text/css" href="chrome://calendar/content/calendar-bindings.css"?>
+<?xml-stylesheet type="text/css" href="chrome://messenger/skin/primaryToolbar.css"?>
+<?xml-stylesheet type="text/css" href="chrome://messenger/skin/messenger.css"?>
+
+<!DOCTYPE dialog [
+  <!ENTITY % globalDTD SYSTEM "chrome://calendar/locale/global.dtd" >
+  <!ENTITY % calendarDTD SYSTEM "chrome://calendar/locale/calendar.dtd" >
+  <!ENTITY % dialogDTD SYSTEM "chrome://calendar/locale/calendar-event-dialog.dtd" >
+  <!ENTITY % brandDTD SYSTEM "chrome://branding/locale/brand.dtd" >
+  %globalDTD;
+  %calendarDTD;
+  %dialogDTD;
+  %brandDTD;
+]>
+
+<!-- Dialog id is changed during excution to allow different Window-icons
+     on this dialog. document.loadOverlay() will not work on this one. -->
+<dialog id="calendar-summary-dialog"
+        windowtype="Calendar:EventSummaryDialog"
+        onload="onLoad()"
+        onunload="onUnload()"
+        ondialogaccept="return onAccept();"
+        ondialogcancel="return onCancel();"
+        ondialogextra1="calItemPrint(window.calendarItem);"
+        buttons="accept,cancel,extra1"
+        buttonlabelextra1="&event.menu.item.print.label;"
+        onresize="rearrangeAttendees();"
+        persist="screenX screenY width height"
+        xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+
+  <!-- Javascript includes -->
+  <script type="application/javascript"
+          src="chrome://calendar/content/calendar-summary-dialog.js"/>
+  <script type="application/javascript"
+          src="chrome://calendar/content/calendar-dialog-utils.js"/>
+  <script type="application/javascript"
+          src="chrome://calendar/content/calendar-ui-utils.js"/>
+  <script type="application/javascript"
+          src="chrome://calendar/content/calendar-item-editing.js"/>
+  <script type="application/javascript"
+          src="chrome://calendar/content/calApplicationUtils.js"/>
+  <!-- CM2V6 Status Bar -->
+  <script type="application/javascript" 
+          src="chrome://calendar/content/calendar-event-statusbar.js"/>
+  <!-- Fin CM2V6 -->
+  <script type="application/javascript" 
+          src="chrome://calendar/content/calendar-cmel-utils.js"/>
+
+  <!-- CM2V6 - Commands -->
+  <commandset id="itemCommands">
+      <!-- Bugzilla 168680 - Attachment Binary - New Command -->
+      <command id="cmd_openAttachment"
+               oncommand="openAttachment()"/>
+      <!-- Bugzilla 168680 - Attachment Binary - Save as -->
+      <command id="cmd_saveAsAttachment"
+               oncommand="saveAsAttachment()"/> 
+      <!-- End Bugzilla 168680 -->       
+      <!-- Bugzilla 168680 - Attachment Binary - download -->
+      <command id="cmd_downloadAttachment"
+               oncommand="downloadAttachment()"/> 
+      <!-- End Bugzilla 168680 -->    
+  </commandset>
+  <!-- Fin CM2V6 -->
+
+  <toolbox id="summary-toolbox"
+           class="mail-toolbox"
+           mode="full"
+           defaultmode="full"
+           iconsize="small"
+           defaulticonsize="small"
+           labelalign="end"
+           defaultlabelalign="end">
+    <toolbar id="summary-toolbar"
+             toolboxid="summary-toolbox"
+             class="chromeclass-toolbar"
+             customizable="false"
+             labelalign="end"
+             defaultlabelalign="end">
+      <toolbarbutton id="saveandcloseButton"
+                     tooltiptext="&summary.dialog.saveclose.tooltiptext;"
+                     label="&summary.dialog.saveclose.label;"
+                     oncommand="saveAndClose();"
+                     class="cal-event-toolbarbutton toolbarbutton-1 saveandcloseButton"/>
+      <toolbarbutton id="acceptButton"
+                     tooltiptext="&summary.dialog.accept.tooltiptext;"
+                     label="&summary.dialog.accept.label;"
+                     oncommand="if (event.target.id == this.id) reply('USER', 'ACCEPTED');"
+                     value="ACCEPTED"
+                     type="menu-button"
+                     class="cal-event-toolbarbutton toolbarbutton-1 replyButton">
+        <menupopup id="acceptDropdown">
+          <menuitem id="acceptButton_Send"
+                    tooltiptext="&summary.dialog.send.tooltiptext;"
+                    label="&summary.dialog.send.label;"
+                    oncommand="reply('AUTO', 'ACCEPTED');"/>
+          <menuitem id="acceptButton_DontSend"
+                    tooltiptext="&summary.dialog.dontsend.tooltiptext;"
+                    label="&summary.dialog.dontsend.label;"
+                    oncommand="reply('NONE', 'ACCEPTED');"/>
+        </menupopup>
+      </toolbarbutton>
+      <toolbarbutton id="tentativeButton"
+                     tooltiptext="&summary.dialog.tentative.tooltiptext;"
+                     label="&summary.dialog.tentative.label;"
+                     oncommand="if (event.target.id == this.id) reply('USER', 'TENTATIVE');"
+                     value="TENTATIVE"
+                     type="menu-button"
+                     class="cal-event-toolbarbutton toolbarbutton-1 replyButton">
+        <menupopup id="tentativeDropdown">
+          <menuitem id="tenatativeButton_Send"
+                    tooltiptext="&summary.dialog.send.tooltiptext;"
+                    label="&summary.dialog.send.label;"
+                    oncommand="reply('AUTO', 'TENTATIVE');"/>
+          <menuitem id="tenativeButton_DontSend"
+                    tooltiptext="&summary.dialog.dontsend.tooltiptext;"
+                    label="&summary.dialog.dontsend.label;"
+                    oncommand="reply('NONE', 'TENTATIVE');"/>
+        </menupopup>
+      </toolbarbutton>
+      <toolbarbutton id="declineButton"
+                     tooltiptext="&summary.dialog.decline.tooltiptext;"
+                     label="&summary.dialog.decline.label;"
+                     oncommand="if (event.target.id == this.id) reply('USER', 'DECLINED');"
+                     type="menu-button"
+                     value="DECLINED"
+                     class="cal-event-toolbarbutton toolbarbutton-1 replyButton">
+        <menupopup id="declineDropdown">
+          <menuitem id="declineButton_Send"
+                    tooltiptext="&summary.dialog.send.tooltiptext;"
+                    label="&summary.dialog.send.label;"
+                    oncommand="reply('AUTO', 'DECLINED');"/>
+          <menuitem id="declineButton_DontSend"
+                    tooltiptext="&summary.dialog.dontsend.tooltiptext;"
+                    label="&summary.dialog.dontsend.label;"
+                    oncommand="reply('NONE', 'DECLINED');"/>
+        </menupopup>
+      </toolbarbutton>
+    </toolbar>
+  </toolbox>
+
+  <notificationbox id="status-notification"/>
+
+  <!-- General -->
+  <box id="item-general-box" orient="vertical">
+    <calendar-caption label="&read.only.general.label;"/>
+    <box orient="horizontal">
+      <grid flex="1">
+        <columns>
+          <column/>
+          <column flex="1"/>
+        </columns>
+        <rows>
+          <row align="center">
+            <label value="&read.only.title.label;"/>
+            <!-- CM2V7 -->
+            <textbox id="item-title"
+                         disable-on-readonly="true"
+                         flex="1"
+                         crop="end"/>
+            <!-- Fin CM2V7 -->
+          </row>
+          <row align="center">
+            <label value="&read.only.calendar.label;"/>
+            <textbox id="item-calendar" class="selectable-label plain" readonly="true"/>
+          </row>
+          <row class="item-date-row"
+               id="item-start-row"
+               mode="start"
+               taskStartLabel="&read.only.task.start.label;"
+               eventStartLabel="&read.only.event.start.label;"
+               align="center"/>
+          <row class="item-date-row"
+               id="item-end-row"
+               mode="end"
+               taskDueLabel="&read.only.task.due.label;"
+               eventEndLabel="&read.only.event.end.label;"
+               align="center"/>
+          <row id="repeat-row" align="top" hidden="true">
+            <label value="&read.only.repeat.label;"/>
+            <box id="repeat-details" orient="vertical">
+              <textbox readonly="true" class="selectable-label plain"/>
+            </box>
+          </row>
+          <row id="location-row" align="center" hidden="true">
+            <label value="&read.only.location.label;"/>
+            <textbox id="item-location" class="selectable-label plain" readonly="true"/>
+          </row>
+          <!-- CM2V6 -->
+          <row id="category-row-event" align="top" hidden="true">
+            <label value="&read.only.category.label;" class="headline"/>
+            <menulist id="item-categories"
+                        disable-on-readonly="true"
+                        flex="1"/>
+          </row>
+          <!-- Fin CM2V6 -->
+          <row id="category-row" align="top" hidden="true">
+            <label value="&read.only.category.label;"/>
+            <label id="item-category" crop="end"/>
+          </row>
+          <row id="organizer-row" align="top" hidden="true" class="item-attendees-row">
+            <label value="&read.only.organizer.label;"/>
+            <hbox class="item-organizer-cell">
+              <img class="itip-icon"/>
+              <label id="item-organizer"
+                     class="text-link item-attendees-cell-label"
+                     crop="end"
+                     onclick="sendMailToOrganizer()"/>
+              <spacer flex="1"/>
+            </hbox>
+          </row>
+          <!-- CM2V6 -->
+          <row id="status-row-event" align="top" hidden="true">
+            <label value="&newevent.status.label; :" control="item-status"/>
+            <hbox pack="start">
+              <menulist id="item-status">
+                <menupopup>
+                  <menuitem label="&newevent.status.free.label;" value=""/>
+                  <menuitem label="&newevent.status.tentative.label;" value="TENTATIVE"/>
+                  <menuitem label="&newevent.status.confirmed.label;" value="CONFIRMED"/>
+                  <menuitem label="&newevent.eventStatus.cancelled.label;" value="CANCELLED"/>
+                </menupopup>
+              </menulist>
+            </hbox>
+          </row>
+          <!-- Fin CM2V6 -->
+          <!-- CM2V6 - MANTIS 1904: Ajouter la possibilité de modifier la confidentialité d'un évènement auquel on est invité. -->
+          <row id="privacy-row-event" align="top" hidden="true">
+            <label value="&event.menu.options.privacy.label; :" control="item-privacy"/>
+            <hbox pack="start">
+              <menulist id="item-privacy">
+                <menupopup>
+                  <menuitem label="&event.menu.options.privacy.public.label;" value="PUBLIC"/>
+                  <menuitem label="&event.menu.options.privacy.private.label;" value="PRIVATE"/>
+                </menupopup>
+              </menulist>
+            </hbox>
+          </row>
+          <!-- Fin CM2V6 -->
+          <row id="status-row" align="top" hidden="true">
+            <label value="&task.status.label;"/>
+            <label value="&newevent.status.tentative.label;" hidden="true" status="TENTATIVE"/>
+            <label value="&newevent.status.confirmed.label;" hidden="true" status="CONFIRMED"/>
+            <label value="&newevent.eventStatus.cancelled.label;" hidden="true" status="CANCELLED"/>
+            <label value="&newevent.todoStatus.cancelled.label;" hidden="true" status="CANCELLED"/>
+            <label value="&newevent.status.needsaction.label;" hidden="true" status="NEEDS-ACTION"/>
+            <label value="&newevent.status.inprogress.label;" hidden="true" status="IN-PROCESS"/>
+            <label value="&newevent.status.completed.label;" hidden="true" status="COMPLETED"/>
+          </row>
+          <separator id="item-main-separator" flex="1" class="groove" hidden="true"/>
+          <row id="reminder-row" hidden="true" align="center">
+            <label value="&read.only.reminder.label;" control="item-alarm"/>
+              <hbox id="event-grid-alarm-picker-box"
+                    align="center">
+                <menulist id="item-alarm"
+                          disable-on-readonly="true"
+                          oncommand="updateReminder()">
+                  <menupopup id="item-alarm-menupopup">
+                    <menuitem id="reminder-none-menuitem"
+                              label="&event.reminder.none.label;"
+                              selected="true"
+                              value="none"/>
+                    <menuseparator id="reminder-none-separator"/>
+                    <menuitem id="reminder-0minutes-menuitem"
+                              label="&event.reminder.0minutes.before.label;"
+                              length="0"
+                              origin="before"
+                              relation="START"
+                              unit="minutes"/>
+                    <menuitem id="reminder-5minutes-menuitem"
+                              label="&event.reminder.5minutes.before.label;"
+                              length="5"
+                              origin="before"
+                              relation="START"
+                              unit="minutes"/>
+                    <menuitem id="reminder-15minutes-menuitem"
+                              label="&event.reminder.15minutes.before.label;"
+                              length="15"
+                              origin="before"
+                              relation="START"
+                              unit="minutes"/>
+                    <menuitem id="reminder-30minutes-menuitem"
+                              label="&event.reminder.30minutes.before.label;"
+                              length="30"
+                              origin="before"
+                              relation="START"
+                              unit="minutes"/>
+                    <menuseparator id="reminder-minutes-separator"/>
+                    <menuitem id="reminder-1hour-menuitem"
+                              label="&event.reminder.1hour.before.label;"
+                              length="1"
+                              origin="before"
+                              relation="START"
+                              unit="hours"/>
+                    <menuitem id="reminder-2hours-menuitem"
+                              label="&event.reminder.2hours.before.label;"
+                              length="2"
+                              origin="before"
+                              relation="START"
+                              unit="hours"/>
+                    <menuitem id="reminder-12hours-menuitem"
+                              label="&event.reminder.12hours.before.label;"
+                              length="12"
+                              origin="before"
+                              relation="START"
+                              unit="hours"/>
+                    <menuseparator id="reminder-hours-separator"/>
+                    <menuitem id="reminder-1day-menuitem"
+                              label="&event.reminder.1day.before.label;"
+                              length="1"
+                              origin="before"
+                              relation="START"
+                              unit="days"/>
+                    <menuitem id="reminder-2days-menuitem"
+                              label="&event.reminder.2days.before.label;"
+                              length="2"
+                              origin="before"
+                              relation="START"
+                              unit="days"/>
+                    <menuitem id="reminder-1week-menuitem"
+                              label="&event.reminder.1week.before.label;"
+                              length="7"
+                              origin="before"
+                              relation="START"
+                              unit="days"/>
+                    <menuseparator id="reminder-custom-separator"/>
+                    <menuitem id="reminder-custom-menuitem"
+                              label="&event.reminder.custom.label;"
+                              value="custom"/>
+                  </menupopup>
+                </menulist>
+                <hbox id="reminder-details">
+                  <hbox id="reminder-icon-box"
+                        class="alarm-icons-box"
+                        align="center"/>
+                  <!-- TODO oncommand? onkeypress? -->
+                  <label id="reminder-multiple-alarms-label"
+                         hidden="true"
+                         value="&event.reminder.multiple.label;"
+                         class="text-link"
+                         disable-on-readonly="true"
+                         flex="1"
+                         hyperlink="true"
+                         onclick="updateReminder()"/>
+                  <label id="reminder-single-alarms-label"
+                         hidden="true"
+                         class="text-link"
+                         disable-on-readonly="true"
+                         flex="1"
+                         hyperlink="true"
+                         onclick="updateReminder()"/>
+                </hbox>
+             </hbox>
+          </row>
+        </rows>
+      </grid>
+    </box>
+  </box>
+
+  <!-- attendee box template -->
+  <vbox id="item-attendees-box-template">
+    <hbox flex="1" class="item-attendees-row" equalsize="always" hidden="true">
+      <box class="item-attendees-cell" hidden="true" flex="1">
+        <img class="itip-icon"/>
+        <label class="item-attendees-cell-label" crop="end" flex="1"/>
+      </box>
+      <box hidden="true" flex="1"/>
+    </hbox>
+  </vbox>
+
+  <!-- Attendees -->
+  <box id="item-attendees" orient="vertical" hidden="true" flex="1">
+    <spacer class="default-spacer"/>
+    <calendar-caption label="&read.only.attendees.label;"
+                      control="item-attendees-box"/>
+    <vbox id="item-attendees-box" flex="1" />
+  </box>
+
+  <!-- Description -->
+  <box id="item-description-box" hidden="true" orient="vertical" flex="1">
+    <spacer class="default-spacer"/>
+    <calendar-caption label="&read.only.description.label;"
+                      control="item-description"/>
+    <box orient="horizontal" flex="1">
+      <textbox id="item-description"
+               multiline="true"
+               rows="6"
+               flex="1"/>
+    </box>
+  </box>
+    
+  <!-- CM2V6 - Attachments URL - Ajout de la piece jointe dans la fenetre reduite -->
+  <!-- Attachments -->
+  <box id="item-attachments-box" hidden="true" orient="vertical">
+    <spacer class="default-spacer"/>
+    <calendar-caption label="&read.only.attachments.label;"
+                      control="attachment-link"/>
+    <box orient="horizontal">
+      <spacer class="default-spacer"/>
+        <listbox id="attachment-link"
+                context="attachment-popup"
+                rows="3"
+                flex="1"
+                onkeypress="attachmentLinkKeyPress(event)"
+                onclick="attachmentLinkClicked(event);">
+          <listcols>
+            <listcol flex="1"/>
+            <listcol/>
+          </listcols>
+        </listbox>
+    </box>
+  </box>
+  <!-- Fin CM2V6 Attachments -->
+
+  <!-- URL link -->
+  <box id="event-grid-link-row" hidden="true" orient="vertical">
+    <spacer class="default-spacer"/>
+    <calendar-caption label="&read.only.link.label;"
+                      control="url-link"/>
+    <label id="url-link"
+           class="text-link default-indent"
+           onclick="launchBrowser(this.getAttribute('href'), event)"
+           oncommand="launchBrowser(this.getAttribute('href'), event)"
+           crop="end"/>
+  </box>
+  <!-- CM2V6 -->
+  <statusbar class="chromeclass-status" id="status-bar">
+    <statusbarpanel id="status-event" flex="1" pack="start">
+      <label id="status-event-text"/>
+    </statusbarpanel>
+    <statusbarpanel class="statusbarpanel-progress" collapsed="true" id="statusbar-progresspanel">
+      <progressmeter class="progressmeter-statusbar" id="statusbar-icon" mode="normal" value="0"/>
+    </statusbarpanel>
+  </statusbar>
+  
+  <popupset id="event-dialog-popupset">
+    <menupopup id="attachment-popup">
+          <menuitem id="attachment-popup-open"
+                    label="&event.attachments.popup.open.label;"
+                    accesskey="&event.attachments.popup.open.accesskey;"
+                    command="cmd_openAttachment"/>
+          <menuitem id="attachment-popup-saveas"
+                    label="&event.attachments.popup.saveas.label;"
+                    accesskey="&event.attachments.popup.saveas.accesskey;"
+                    command="cmd_saveAsAttachment"/>
+          <menuitem id="attachment-popup-download"
+                    label="&event.attachments.popup.download.label;"
+                    accesskey="&event.attachments.popup.download.accesskey;"
+                    command="cmd_downloadAttachment"/>
+          <menuseparator/>
+    </menupopup>
+  </popupset>
+  <!-- Fin CM2V6 -->
+
+</dialog>

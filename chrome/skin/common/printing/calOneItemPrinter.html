@@ -1,0 +1,90 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <title id="title"/>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <style type="text/css" id="sheet">
+
+      #item-container {width: 100%; display:grid;
+                       grid-template-rows:auto;
+                       grid-row-gap:8px;
+      }
+
+      #calendar-name {
+        border-bottom: 2px solid black;
+        font-size: 14px;
+        font-weight: bold;
+        margin-bottom: 15px;
+        grid-column-start:nom;
+        grid-column-end:-1;
+        text-align:left;
+      }
+
+      .blocinfos {
+        background-color:#f0f0f0;
+        padding:2px;
+      }
+
+      .propriete{
+        width: 100%; display:grid;
+        grid-template-columns: [nom] 20% [valeur] 1fr;
+      }
+
+      .property-name {
+        font-weight: bold;
+        font-size: 12px;
+        grid-column-start:nom;
+      }
+
+      .property-value {
+        font-weight: normal;
+        font-size: 12px;
+        grid-column-start:valeur;
+      }
+
+      .description {
+        font-weight: normal;
+        font-size: 12px;
+        width: 80%;
+        padding-left:8px;
+      }
+
+      .recurrence p{
+        margin:0;
+        white-space: pre;
+      }
+
+    </style>
+  </head>
+  <body>
+
+    <div id="item-container">
+      <div id="calendar-name"/>
+    </div>
+
+    <pre id="description" class="description"/>
+
+    <!-- Templates follow -->
+    <div id="templates" hidden="true">
+
+      <div id="blocinfos" class="blocinfos">
+        <div class="propriete">
+          <span class="property-name"/>
+          <span class="property-value"/>
+        </div>
+      </div>
+
+      <div id="propriete" class="propriete">
+        <span class="property-name"/>
+        <span class="property-value"/>
+      </div>
+
+      <div id="recurrence" class="recurrence propriete">
+        <span class="property-name"/>
+        <p class="property-value"/>
+      </div>
+
+    </div>
+
+  </body>
+</html>

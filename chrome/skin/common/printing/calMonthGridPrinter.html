@@ -1,0 +1,152 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+   "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <title id="title"/>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <style type="text/css" id="sheet">
+      #month-container {width:100%;}
+      .main-table { display:grid; grid-template-columns:30% 1fr 30%; border: 1px solid black; padding:4px; }
+      .month-name {font-weight:bold; font-size: 18px; text-align:center; vertical-align: middle;}
+      .week-container {border:1px solid black;margin-top:4px;}
+      .day-container {font-size: 10px;vertical-align:top;}
+      .day-name { border: none; background-color: white; font-size: 10px; text-align:center;}
+      .day-number { border-bottom: 1px solid #7A7A7A; text-align:left; vertical-align:top;}
+      .day-box { border: 1px solid #7A7A7A; vertical-align: top; }
+      .out-of-month { background-color: white !important; }
+      .day-off { background-color: white !important; }
+      .taskItem { border-bottom: 1px solid #F3F3F3; }
+      .tasks { margin: 5px; }
+      .taskList { margin: 0px; list-style-image: none; list-style-type: none; padding: 0px; }
+      .agenda-libelle {overflow: hidden; color: black; font-size: 10px; padding-left:2px; border-radius:2px; margin:1px;}
+      .categories-container {display:grid; grid-column-gap:4px;}
+      .categorie-libelle {overflow: hidden; text-align:right; font-size: 10px; padding-left:2px; padding-right:2px; 
+                          border-right: solid 15px; border-radius:2px;}
+      .itemEvent {font-size: 10px; text-align: left; vertical-align:top; border-radius:2px; padding-left:2px;}
+      .item-attendees-img {width:12px; height:12px;}
+  </style>
+  </head>
+  <body>
+    <div id="month-container"/>
+    <div id="tasks-list-box" hidden="true">
+      <h3 id="tasks-title"/>
+      <ul class="taskList" id="task-container"/>
+    </div>
+
+    <!-- Templates follow -->
+    <div id="templates" hidden="true">
+    
+      <li id="task-template">
+        <input type="checkbox" class="task-checkbox" disabled="disabled"/>
+        <span class="task-title"/>
+      </li>
+      
+      <tr id="item-template">
+        <td class="calendar-color-box itemEvent">
+          <span class="item-interval"/>
+          <span class="item-title"/>
+          <span class="item-lieu"/>
+        </td>
+      </tr>
+      
+      <img id="itemEvent-img" class="item-attendees-img" align="right"/>
+
+      <div id="agenda-libelle" class="agenda-libelle"/>
+      
+      <div id="categorie-libelle" class="categorie-libelle"/>
+            
+      <div id="month-template" style="page-break-after: always;">   
+
+        <div width="100%" class="main-table">
+          <div class="agendas-container"/>
+          <div class="month-name"/>
+          <div>
+            <div class="categories-container">
+            </div>
+          </div>
+        </div>
+        
+        <table width="100%" class="week-container">
+          <tr>
+            <td class="day-name day1-title"/>
+            <td class="day-name day2-title"/>
+            <td class="day-name day3-title"/>
+            <td class="day-name day4-title"/>
+            <td class="day-name day5-title"/>
+            <td>
+              <table style="border:none; width:100%; margin:0px 0px 0px 0px;">
+                <tr>
+                  <td class="day-name day6-title"/>
+                  <td class="day-name">&sol;</td>
+                  <td class="day-name day7-title"/>
+                </tr>
+              </table>
+            </td>
+          </tr>
+        </table>       
+      </div>
+      
+      <div id="week-template">
+        <tr>
+          <td class="day1-box day-box" width="100">
+            <table width="100%" class="day-container day1-container">
+              <tr>
+                <td class="day1-number day-number"/>
+              </tr>
+            </table>
+          </td>
+          <td class="day2-box day-box" width="100">
+            <table width="100%" class="day-container day2-container">
+              <tr>
+                <td class="day2-number day-number"/>
+              </tr>
+            </table>
+          </td>
+          <td class="day3-box day-box" width="100">
+            <table width="100%" class="day-container day3-container">
+              <tr>
+                <td class="day3-number day-number"/>
+              </tr>
+            </table>
+          </td>
+          <td class="day4-box day-box" width="100">
+            <table width="100%" class="day-container day4-container">
+              <tr>
+                <td class="day4-number day-number"/>
+              </tr>
+            </table>
+          </td>
+          <td class="day5-box day-box" width="100">
+            <table width="100%" class="day-container day5-container">
+              <tr>
+                <td class="day5-number day-number"/>
+              </tr>
+            </table>
+          </td>         
+          <td class="day-box" width="100">
+            <table width="100%" style="border-spacing:0">
+              <tr>
+                <td class="day-box day6-box"  width="100">
+                  <table width="100%" class="day-container day6-container">
+                    <tr>
+                      <td class="day6-number day-number"/>
+                    </tr>
+                  </table>
+                </td> 
+              </tr>
+              <tr>
+                <td class="day-box day7-box" width="100">
+                  <table width="100%" class="day-container day7-container">
+                    <tr>
+                      <td class="day7-number day-number"/>
+                    </tr>
+                  </table>
+                </td>            
+              </tr>
+            </table>
+          </td>
+        </tr>
+      </div>
+    </div>
+  </body>
+</html>

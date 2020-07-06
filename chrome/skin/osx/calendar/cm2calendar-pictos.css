@@ -1,0 +1,55 @@
+/* cm2v3 pictogrammes horde */
+
+/* prive */
+.item-private-img {
+    /* Initially hide the image, overwrite by setting a correct image region */
+    list-style-image: url(chrome://calendar/skin/cm2picto-locked.png);
+    -moz-image-region: rect(0px 12px 12px 0px);
+    width: 12px;
+    height: 12px;
+}
+
+/* participants */
+.item-attendees-img {
+    /* Initially hide the image, overwrite by setting a correct image region */
+    list-style-image: url(chrome://calendar/skin/cm2picto-attendees.png);
+    -moz-image-region: rect(0px 12px 12px 0px);
+    width: 12px;
+    height: 12px;
+}
+
+/* attachement */
+.item-attach-img {
+    /* Initially hide the image, overwrite by setting a correct image region */
+    list-style-image: url(chrome://calendar/skin/cm2picto-attach-fff.png);
+    -moz-image-region: rect(0px 12px 12px 0px);
+    width: 12px;
+    height: 12px;
+}
+
+/* attachement */
+.item-attach-img[value="000"] {
+    /* Initially hide the image, overwrite by setting a correct image region */
+    list-style-image: url(chrome://calendar/skin/cm2picto-attach-000.png);
+    -moz-image-region: rect(0px 12px 12px 0px);
+    width: 12px;
+    height: 12px;
+}
+
+/* reccurent */
+.item-recur-img {
+    /* Initially hide the image, overwrite by setting a correct image region */
+    list-style-image: url(chrome://calendar/skin/cm2picto-recur-fff.png);
+    -moz-image-region: rect(0px 12px 12px 0px);
+    width: 12px;
+    height: 12px;
+}
+
+.item-recur-img[value="000"] {
+    list-style-image: url(chrome://calendar/skin/cm2picto-recur-000.png);
+    -moz-image-region: rect(0px 12px 12px 0px);
+    width: 12px;
+    height: 12px;
+}
+
+

@@ -1,0 +1,186 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+   "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <title id="title"/>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <style id="sheet">
+      #planning-container {width:100%;}
+
+      .contenu {display: grid;
+                border:none;
+                grid-template-columns: [jour] 2fr [autres] 1fr;
+                grid-column-gap:4px;
+                margin-top:4px;}
+
+      .entete { display:grid; grid-template-columns:1fr 1fr; border: 1px solid black; padding:4px; }
+      .agenda-libelle {color: black; font-size: 10px; padding-left:2px; padding-right:2px; border-radius:2px;}
+      .libelle-jour {font-weight:bold; font-size: 16px; text-align:center; }
+
+      .contenu-jour {display: grid; grid-column-start:jour; grid-gap:1px; background-color:black; border:1px solid black;}
+
+       /* a calculer dans calTimeDayPrinter.js
+      .lignes-template {grid-template-rows: [jour] auto [entier] auto t0 1fr t1 1fr etc}
+                                            */
+      .colonnes-template {grid-template-columns: [heures] 3em [rdv] 1fr}
+
+      .jour-template {display: grid; grid-template-columns:auto; grid-row-end:-1; background-color:white;}
+
+      .bloc-heure {padding-left:2px; grid-column-start:heures; background-color:white;}
+
+      .jour {grid-row-start:jour; background-color:white; }
+      .libelle-rdv { text-align:center; font-weight:bold; font-size: 12px;}
+
+      .jour-entier {grid-row-start:entier; background-color:white; min-height:10px;}
+
+      .heure {font-weight:bold; font-size: 16px;}
+      .minutes {font-size: 10px;}
+
+      .heurejour {background-color:white;}
+
+      /* calculer grid-template-rows: repeat(heures*12, 1fr); */
+      .conteneur-evenements {display: grid; grid-row-start:t0; grid-row-end:-1; grid-column-start:rdv; background-color:transparent;}
+
+      .itemEvent {font-size: 12px; text-indent: 2px; vertical-align:top; border-radius:2px;overflow:hidden;}
+      .item-attendees-img {width:12px; height:12px;}
+      .itemEntier {grid-row-start:entier;}
+      .item-heure {font-size: 12px; font-weight: bold;}
+
+      .autres-container {grid-column-start:autres;}
+
+      .contenu-autres {padding-left:2px; padding-bottom:4px;
+                       margin-top:4px;
+                       border: 1px solid black;
+                       min-height:40px;}
+
+      .taches-container {margin-top:0;}
+      .tache {font-size: 10px; margin-left:2px; margin-top:2px; border-radius:2px;}
+
+      .categorie-libelle {font-size: 12px; text-indent:2px;
+                          margin-left:2px; margin-top:2px;
+                          border-left: solid 15px; border-radius:2px;}
+
+      .note {font-size: 10px; margin-left:2px; margin-top:2px; border-radius:2px;}
+
+      .autres-titre {border-bottom: 1px solid black;
+                     margin-right:2px; margin-bottom:8px;
+                     font-weight:bold; font-size: 12px; text-align:center;}
+
+      .out-of-day { background-color: white !important; }
+      .day-off { background-color: white !important; }
+
+      .taskItem { border-bottom: 1px dotted #7A7A7A; }
+      .task-title[iscompleted=true] {text-decoration: line-through;}
+      .tasks { margin: 5px; }
+      .taskList { margin: 0px; list-style-image: none; list-style-type: none; padding: 0px; }
+    </style>
+  </head>
+  <body>
+    <div id="jour-container" class="jour-container"/>
+
+    <div id="tasks-list-box" hidden="true">
+      <h3 id="tasks-title"/>
+      <ul class="taskList" id="task-container"/>
+    </div>
+
+    <!-- Templates follow -->
+    <div id="templates" hidden="true">
+
+      <li id="task-template">
+        <input type="checkbox" class="task-checkbox" disabled="disabled"/>
+        <span class="task-title"/>
+      </li>
+
+      <div id="item-template" class="calendar-color-box itemEvent">
+        <span class="item-heure"/>
+        <span class="item-titre"/>
+        <span class="item-lieu"/>
+      </div>
+
+      <img id="itemEvent-img" class="item-attendees-img" align="right"/>
+
+      <div id="agenda-libelle" class="agenda-libelle"/>
+
+      <div id="categorie-libelle" class="categorie-libelle"/>
+
+      <!-- modele heures -->
+      <div id="bloc-heure" class="bloc-heure">
+          <span class="heure"></span>
+          <span class="minutes">00</span>
+      </div>
+
+      <div id="heurejour" class="heurejour"/>
+
+      <!-- conteneur d'un jour -->
+      <div id="jour-template" style="page-break-after: always;">
+
+        <div class="entete">
+          <div class="agendas-container" style="grid-column-start:1">
+          </div>
+          <div class="libelle-jour" style="grid-column-start:2">
+          </div>
+        </div>
+
+        <div class="contenu">
+          <div  class="contenu-jour lignes-template colonnes-template">
+
+            <div class="heurejour" style="grid-row-start:jour;grid-row-end:t0;grid-column-start:heures;"/>
+
+            <!-- le jour -->
+            <div class="jour" style="grid-row-start:jour; grid-column-start:rdv;">
+              <div class="libelle-rdv">Rendez-vous</div>
+            </div>
+
+            <!-- evenements jour entier -->
+            <div class="jour-entier" style="grid-row-start:entier; grid-column-start:rdv;">
+              <!--
+              <div class="itemEvent itemEntier">Toute la journée</div>
+              -->
+            </div>
+
+            <!-- evenements != entiers -->
+            <div  class="conteneur-evenements">
+              <!--
+              <div class="itemEvent" style="grid-row-start:h0900;grid-row-end:h1100;" >9 a 11</div>
+              -->
+            </div>
+
+          </div>
+
+          <!-- autres contenus -->
+          <div class="autres-container">
+
+            <div class="taches-container contenu-autres">
+              <div class="autres-titre">Tâches sans date d'échéance</div>
+              <ul class="taskList">
+                <!--
+                <li id="task-template">
+                  <input type="checkbox" class="task-checkbox" disabled="disabled"/>
+                  <span class="task-title"/>
+                </li>
+                -->
+              </ul>
+             </div>
+
+            <div class="categories-container contenu-autres">
+              <div class="autres-titre">Catégories</div>
+              <!--
+              <div id="categorie-libelle" class="categorie-libelle">Catégorie 1</div>
+              -->
+            </div>
+            <!--
+            <div class="notes-container contenu-autres">
+              <div class="autres-titre">Notes
+              </div>
+              <div class="note"> Une note</div>
+            </div>
+            -->
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+  </body>
+</html>

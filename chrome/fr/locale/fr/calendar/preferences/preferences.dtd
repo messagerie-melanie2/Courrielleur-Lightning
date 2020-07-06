@@ -1,0 +1,16 @@
+<!-- This Source Code Form is subject to the terms of the Mozilla Public
+   - License, v. 2.0. If a copy of the MPL was not distributed with this
+   - file, You can obtain one at http://mozilla.org/MPL/2.0/. -->
+
+<!ENTITY  paneGeneral.title       "Général">
+<!ENTITY  paneAlarms.title        "Alarmes">
+<!ENTITY  paneCategories.title    "Catégories">
+<!ENTITY  paneViews.title         "Vues">
+
+<!-- CM2V6 Attachments - 23/08/2011 - Onglet pieces jointes -->
+<!ENTITY  paneAttachments.title    "Pièces jointes">
+<!-- End CM2V6 Attachments -->
+
+<!-- CM2V6 Print - 13/03/2012 - Onglet impression -->
+<!ENTITY  panePrints.title    "Impression">
+<!-- End CM2V6 Print -->

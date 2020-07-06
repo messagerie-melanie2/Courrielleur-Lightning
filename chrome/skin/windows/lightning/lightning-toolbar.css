@@ -1,0 +1,38 @@
+/* This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
+
+@import url(chrome://lightning-common/skin/lightning-toolbar.css);
+
+#calendar-toolbar2,
+#task-toolbar2 {
+  border-top-width: 0;
+}
+
+/* CM2V6 - Lightning "Rotate" Toolbarbutton */
+#lightning-button-rotate {
+    list-style-image: url(chrome://lightning/skin/mode-rotate-icons.png);
+    -moz-image-region: rect(0px 24px 24px 0px);
+}
+#lightning-button-rotate:hover {
+    -moz-image-region: rect(24px 24px 48px 0px);
+}
+#lightning-button-rotate[disabled] {
+    -moz-image-region: rect(48px 24px 72px 0px);
+}
+toolbar[iconsize="small"] #lightning-button-rotate {
+    -moz-image-region: rect(0px 64px 16px 48px);
+}
+toolbar[iconsize="small"] #lightning-button-rotate:hover {
+    -moz-image-region: rect(16px 64px 32px 48px);
+}
+toolbar[iconsize="small"] #lightning-button-rotate[disabled] {
+    -moz-image-region: rect(32px 64px 48px 48px);
+}
+/* Fin CM2V6 */
+
+@media (-moz-windows-glass) {
+  #calendar-toolbox:not(:-moz-lwtheme) {
+    border-bottom-color: #AABCCF;
+  }
+}

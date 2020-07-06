@@ -1,0 +1,77 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+   "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <title id="title"/>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <style type="text/css" id="sheet">
+      #planning-container {width:100%;}
+      .main-table { font-size: 26px; font-weight: bold; }
+      .week-number {font-weight:bold; font-size: 18px;}
+      .planning-contenu {page-break-after: always; table-layout: fixed; font-size: 12px; border: 1px solid black;}
+      .day-box {}
+      .day-off { background-color: #D3D3D3 !important; }
+      .libelle-jour { font-size: 12px; font-weight:bold;}
+      .taskItem { border-bottom: 1px solid #F3F3F3; }
+      .tasks { margin: 5px; }
+      .taskList { margin: 0px; list-style-image: none; list-style-type: none; padding: 0px; }
+      .agenda-libelle {overflow: hidden; color: black; font-size: 12px; font-weight:bold; border-radius:2px; margin:1px;}
+      .item-template {border: 1px solid black; padding: 2px; overflow: hidden; border-radius:2px;}
+      .item-interval {font-weight: bold; font-size: 9px; word-wrap: break-word;}
+      .item-title {font-size: 11px; word-wrap: break-word;}
+      .item-lieu {font-style: italic; font-size: 9px; font-weight:bold; word-wrap: break-word;}
+    </style>
+  </head>
+  <body>
+    <div id="planning-container"/>
+    <div id="tasks-list-box" hidden="true">
+      <h3 id="tasks-title"/>
+      <ul class="taskList" id="task-container"/>
+    </div>
+
+    <!-- Templates follow -->
+    <div id="templates" hidden="true">
+      <li id="task-template">
+        <input type="checkbox" class="task-checkbox" disabled="disabled"/>
+        <span class="task-title"/>
+      </li>
+
+      <div id="item-template" valign="top" align="left" class="item-template">
+        <div class="item-heure"/>
+        <div class="item-titre"/>
+        <div class="item-lieu"/>
+      </div>
+
+      <tr id="agenda-planning">
+        <td class="agenda-libelle"/>
+        <td class="day-1" valign="top"/>
+        <td class="day-2" valign="top"/>
+        <td class="day-3" valign="top"/>
+        <td class="day-4" valign="top"/>
+        <td class="day-5" valign="top"/>
+        <td class="day-6" hidden="true" valign="top"/>
+        <td class="day-0" hidden="true" valign="top"/>
+      </tr>
+
+      <div id="planning-template" style="page-break-after: always;">
+        <table border="0" width="100%" class="main-table">
+          <tr>
+            <td align="center" valign="bottom" class="week-number"/>
+          </tr>
+        </table>
+        <table width="100%" height="90%" cellspacing="0" border="1" class="planning-contenu">
+          <tr>
+            <td align="center" valign="bottom" class="agendas-entete libelle-jour"/>
+            <td align="center" valign="bottom" class="monday-title libelle-jour"/>
+            <td align="center" valign="bottom" class="tuesday-title libelle-jour"/>
+            <td align="center" valign="bottom" class="wednesday-title libelle-jour"/>
+            <td align="center" valign="bottom" class="thursday-title libelle-jour"/>
+            <td align="center" valign="bottom" class="friday-title libelle-jour"/>
+            <td align="center" valign="bottom" class="saturday-title libelle-jour" hidden="true"/>
+            <td align="center" valign="bottom" class="sunday-title libelle-jour" hidden="true"/>
+          </tr>
+        </table>
+      </div>
+    </div>
+  </body>
+</html>
