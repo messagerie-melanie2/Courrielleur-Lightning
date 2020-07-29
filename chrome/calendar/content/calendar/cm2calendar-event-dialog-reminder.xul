@@ -46,6 +46,7 @@
 <?xml-stylesheet type="text/css" href="chrome://calendar/skin/calendar-event-dialog-reminder.css"?>
 <?xml-stylesheet type="text/css" href="chrome://calendar/content/datetimepickers/datetimepickers.css"?>
 <?xml-stylesheet type="text/css" href="chrome://calendar/content/calendar-bindings.css"?>
+<?xml-stylesheet type="text/css" href="chrome://messenger/content/bindings.css"?>
 
 <!DOCTYPE dialog SYSTEM "chrome://calendar/locale/dialogs/calendar-event-dialog-reminder.dtd" >
 
@@ -70,8 +71,9 @@
 	<hbox id="reminder-relative-length-unit-relation" flex="1">
 		<textbox id="reminder-length"
 						 type="number"
-						 size="1"
-						 min="1"/>
+						 value="1"
+						 min="1"
+             size="10"/>
 		<menulist id="reminder-unit" flex="1">
 			<menupopup id="reminder-unit-menupopup">
 				<menuitem id="reminder-minutes-menuitem"
