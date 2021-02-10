@@ -683,61 +683,63 @@ calCalendarManager.prototype = {
             for (let key of Services.prefs.getChildList(REGISTRY_BRANCH)) { // merge down all keys
                 allCals[key.substring(0, key.indexOf(".", REGISTRY_BRANCH.length))] = true;
             }
+            if(Preferences.get("calendar.list.sortOrder", null) != null)
+            {            
+              let allid = Preferences.get("calendar.list.sortOrder", null).split(" ");
+              for (let calBranch in allCals) {
+                  let id = calBranch.substring(REGISTRY_BRANCH.length);
+                  let ctype = Preferences.get(calBranch + ".type", null);
+                  let curi = Preferences.get(calBranch + ".uri", null);
 
-            let allid = Preferences.get("calendar.list.sortOrder", null).split(" ");
-            for (let calBranch in allCals) {
-                let id = calBranch.substring(REGISTRY_BRANCH.length);
-                let ctype = Preferences.get(calBranch + ".type", null);
-                let curi = Preferences.get(calBranch + ".uri", null);
+                  try {
+                      if (!ctype || !curi || 
+                          !allid.includes(id)) { // sanity check
+                          Services.prefs.deleteBranch(calBranch + ".");
+                          continue;
+                      }
+                      allid.push(id);
 
-                try {
-                    if (!ctype || !curi || 
-                        !allid.includes(id)) { // sanity check
-                        Services.prefs.deleteBranch(calBranch + ".");
-                        continue;
-                    }
-                    allid.push(id);
+                      let uri = Services.io.newURI(curi);
+                      let calendar = this.createCalendar(ctype, uri);
+                      if (calendar) {
+                          calendar.id = id;
+                          if (calendar.getProperty("auto-enabled")) {
+                              calendar.deleteProperty("disabled");
+                              calendar.deleteProperty("auto-enabled");
+                          }
 
-                    let uri = Services.io.newURI(curi);
-                    let calendar = this.createCalendar(ctype, uri);
-                    if (calendar) {
-                        calendar.id = id;
-                        if (calendar.getProperty("auto-enabled")) {
-                            calendar.deleteProperty("disabled");
-                            calendar.deleteProperty("auto-enabled");
-                        }
+                          if ((calendar.getProperty("cache.supported") !== false) &&
+                              (calendar.getProperty("cache.enabled") ||
+                               calendar.getProperty("cache.always"))) {
+                              calendar = new calCachedCalendar(calendar);
+                          }
+                      } else { // create dummy calendar that stays disabled for this run:
+                          calendar = new calDummyCalendar(ctype);
+                          calendar.id = id;
+                          calendar.uri = uri;
+                          // try to enable on next startup if calendar has been enabled:
+                          if (!calendar.getProperty("disabled")) {
+                              calendar.setProperty("auto-enabled", true);
+                          }
+                          calendar.setProperty("disabled", true);
+                      }
 
-                        if ((calendar.getProperty("cache.supported") !== false) &&
-                            (calendar.getProperty("cache.enabled") ||
-                             calendar.getProperty("cache.always"))) {
-                            calendar = new calCachedCalendar(calendar);
-                        }
-                    } else { // create dummy calendar that stays disabled for this run:
-                        calendar = new calDummyCalendar(ctype);
-                        calendar.id = id;
-                        calendar.uri = uri;
-                        // try to enable on next startup if calendar has been enabled:
-                        if (!calendar.getProperty("disabled")) {
-                            calendar.setProperty("auto-enabled", true);
-                        }
-                        calendar.setProperty("disabled", true);
-                    }
+                      this.setupCalendar(calendar);
+                  } catch (exc) {
+                      cal.ERROR("Can't create calendar for " + id + " (" + ctype + ", " + curi + "): " + exc);
+                  }
+              }
 
-                    this.setupCalendar(calendar);
-                } catch (exc) {
-                    cal.ERROR("Can't create calendar for " + id + " (" + ctype + ", " + curi + "): " + exc);
-                }
-            }
+              // do refreshing in a second step, when *all* calendars are already available
+              // via getCalendars():
+              for (let id in this.mCache) {
+                  let calendar = this.mCache[id];
+                  if (!calendar.getProperty("disabled") && calendar.canRefresh) {
 
-            // do refreshing in a second step, when *all* calendars are already available
-            // via getCalendars():
-            for (let id in this.mCache) {
-                let calendar = this.mCache[id];
-                if (!calendar.getProperty("disabled") && calendar.canRefresh) {
-
-                  cmelSynchroAgenda.refreshCalendar(calendar);
-                    //calendar.refresh();
-                }
+                    cmelSynchroAgenda.refreshCalendar(calendar);
+                      //calendar.refresh();
+                  }
+              }
             }
         }
     },
