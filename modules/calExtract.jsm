@@ -144,8 +144,7 @@ Extractor.prototype = {
         } else {
             let spellclass = "@mozilla.org/spellchecker/engine;1";
             let mozISpellCheckingEngine = Components.interfaces.mozISpellCheckingEngine;
-            let spellchecker = Components.classes[spellclass]
-                                         .getService(mozISpellCheckingEngine);
+            let spellchecker = Components.classes[spellclass].getService(mozISpellCheckingEngine);
 
             let arr = {};
             let cnt = {};
@@ -162,7 +161,10 @@ Extractor.prototype = {
             let words = this.email.split(/\s+/);
             let most = 0;
             let mostLocale;
-            for (let dict in dicts) {
+            for (let dict in dicts) 
+            {
+              try
+              {
                 // dictionary locale and patterns locale match
                 if (this.checkBundle(dicts[dict])) {
                     let time1 = (new Date()).getTime();
@@ -184,6 +186,13 @@ Extractor.prototype = {
                     cal.LOG("[calExtract] Dictionary present, rules missing: " + dicts[dict]);
                     continue;
                 }
+              }
+              catch(ex)
+              {
+                cal.LOG("[calExtract] Dictionary present, error found: " + dicts[dict]);
+                continue;
+              }
+              
 
                 let correct = 0;
                 let total = 0;
