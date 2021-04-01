@@ -6,6 +6,7 @@
  ChromeUtils.import("resource://gre/modules/XPCOMUtils.jsm");
  ChromeUtils.import("resource://calendar/modules/utils/calL10NUtils.jsm");
  ChromeUtils.import("resource://calendar/modules/ltnInvitationUtils.jsm");
+ ChromeUtils.import("resource://calendar/modules/calRecurrenceUtils.jsm");
  
  XPCOMUtils.defineLazyModuleGetter(this, "cal", "resource://calendar/modules/calUtils.jsm", "cal");
  

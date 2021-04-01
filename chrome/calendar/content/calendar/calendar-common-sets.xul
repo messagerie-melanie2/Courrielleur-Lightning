@@ -267,7 +267,7 @@
                 observes="cmd_paste"
                 command="cmd_paste"/>
       <menuseparator id="calendar-item-context-separator-cutcopypaste"/>
-      <!--
+      <!-- 6067 convertir en message-->
       <menu id="calendar-item-context-menu-convert-menu"
             label="&calendar.context.convertmenu.label;"
             accesskey="&calendar.context.convertmenu.accesskey.calendar;">
@@ -288,7 +288,7 @@
                     oncommand="calendarTaskButtonDNDObserver.onDropItems(currentView().getSelectedItems({}))"/>
         </menupopup>
       </menu>
-      -->
+      
       
       <menuitem id="calendar-item-context-menu-print-menuitem"
                 label="&calendar.context.printevent.label;..."

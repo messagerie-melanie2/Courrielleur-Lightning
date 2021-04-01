@@ -9,6 +9,7 @@ ChromeUtils.import("resource://gre/modules/XPCOMUtils.jsm");
 ChromeUtils.import("resource://gre/modules/Preferences.jsm");
 ChromeUtils.import("resource://calendar/modules/ltnInvitationUtils.jsm");
 ChromeUtils.import("resource://calendar/modules/utils/calL10NUtils.jsm");
+ChromeUtils.import("resource://calendar/modules/calRecurrenceUtils.jsm");
 
 /**
  * Constructor of calItipEmailTransport object
