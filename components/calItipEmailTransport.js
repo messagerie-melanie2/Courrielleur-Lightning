@@ -220,7 +220,7 @@ calItipEmailTransport.prototype = {
                 if (parent.closed) {
                     parent = cal.window.getCalendarWindow();
                 }
-                let cancelled = Services.prompt.confirmEx(
+                /*let cancelled = Services.prompt.confirmEx(
                     parent,
                     cal.l10n.getLtnString("imipSendMail.title"),
                     cal.l10n.getLtnString("imipSendMail.text"),
@@ -234,7 +234,7 @@ calItipEmailTransport.prototype = {
                 if (cancelled) {
                     cal.LOG("sendXpcomMail: Sending of invitation email aborted by user!");
                     break;
-                } // else go on with auto sending for now
+                } // else go on with auto sending for now*///#6107: Suppression envoi d'une invitation sans POP-UP de confirmation  
             }
             // falls through intended
             case Ci.calIItipItem.AUTO: {
