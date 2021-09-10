@@ -2570,6 +2570,11 @@ function updateCalendar() {
                 node.removeAttribute("onclick");
             }
         }
+	else if(window.calendarItem.parentItem.recurrenceInfo)
+        {
+          // #6208 empêcher de passer la répétition à "Jamais" en mode edition d'une récurence
+          disableElement("repeat-none-menuitem");
+        }
 
         // If the item is a proxy occurrence/instance, a few things aren't
         // valid.
