@@ -813,7 +813,8 @@ calRecurrenceInfo.prototype = {
                 rid = rid.getInTimezone(rdate ? rdate.timezone : startTimezone);
                 rid.addDuration(timeDiff);
                 ex.recurrenceId = rid;
-                cal.item.shiftOffset(ex, timeDiff);
+                // #6185: Ne pas décaller les exceptions lors d'un changement d'horaire !
+                //cal.item.shiftOffset(ex, timeDiff);
                 modifiedExceptions.push(ex);
                 this.removeExceptionFor(exid);
             }
