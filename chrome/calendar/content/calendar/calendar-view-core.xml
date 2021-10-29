@@ -175,7 +175,7 @@
         <body><![CDATA[
             let locationLabel = document.getAnonymousElementByAttribute(this, "anonid", "event-location");
             let location = this.mOccurrence.getProperty("LOCATION");
-            let showLocation = Preferences.get("calendar.view.showLocation", false);
+            let showLocation = true;//Preferences.get("calendar.view.showLocation", false);
 
             locationLabel.value = showLocation && location ? location : "";
             setBooleanAttribute(locationLabel, "hidden", !showLocation || !location);
