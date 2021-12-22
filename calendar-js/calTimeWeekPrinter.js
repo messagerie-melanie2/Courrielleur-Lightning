@@ -427,6 +427,13 @@ calTimeWeekPrinter.prototype = {
       img.setAttribute('src', cal.print.getBase64Picto("locked"));
       div.appendChild(img);
     }
+    
+    let style = "";
+    // annulé
+    if (item.hasProperty("STATUS") &&
+        "CANCELLED"==item.getProperty("STATUS")) {
+      style="text-decoration-line: line-through;background-color:#9AE46D;"
+    }
 
     // participants
     let parts=item.getAttendees({});
@@ -462,6 +469,7 @@ calTimeWeekPrinter.prototype = {
 
       let cl=div.getAttribute("class");
       div.setAttribute("class", cl+" itemEntier");
+      div.setAttribute("style", style);
 
     } else{
 
@@ -478,7 +486,7 @@ calTimeWeekPrinter.prototype = {
         end=this.getLigne(itemEndDate.hour, itemEndDate.minute);
       }
       
-      let style="grid-row-start:"+start+";grid-row-end:"+end+";";    
+      style+="grid-row-start:"+start+";grid-row-end:"+end+";";    
       div.setAttribute("style", style);
     }
 
