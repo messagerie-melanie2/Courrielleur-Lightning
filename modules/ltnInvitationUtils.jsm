@@ -114,7 +114,10 @@ ltn.invitation = {
                         mode = Components.interfaces.mozITXTToHTMLConv.kStructPhrase +
                                Components.interfaces.mozITXTToHTMLConv.kURLs;
                         // eslint-disable-next-line no-unsanitized/property
-                        content.innerHTML = linkConverter.scanHTML(contentText, mode);
+                        
+                        // #6313 - On catch aussi si le scanHTML echoue
+                        try{content.innerHTML = linkConverter.scanHTML(contentText, mode);}
+                        catch (ex){content.innerHTML = contentText;}
                     }
                 } else {
                     content.textContent = aContentText;
