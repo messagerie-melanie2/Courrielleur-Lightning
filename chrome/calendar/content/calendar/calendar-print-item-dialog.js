@@ -115,17 +115,27 @@ function refreshHtml(finishFunc) {
             convStream.init(pipe.inputStream, "UTF-8", 0,
                             Ci.nsIConverterInputStream.DEFAULT_REPLACEMENT_CHARACTER);
             try {
-                let portion = {};
-                while (convStream.readString(-1, portion)) {
+                 let portion = {};
+                 var cont;
+                 var parser = new DOMParser();
+                  do {
+                      cont = convStream.readString(1,portion);
+                      printContent += portion.value;
+                      //#6219 add height limit to force page switch on long content
+                      printContent = printContent.replace("<pre class=\"description\" style=\"grid-row-start:5;\">", "<pre class=\"description\" style=\"grid-row-start:5;height:500px;\">");
+                  }
+                  while(cont);
+              
+                /*let portion = {};
+                while (convStream.readString(1, portion)) {
                     printContent += portion.value;
-                }
+                }*/
             } finally {
                 convStream.close();
             }
         } catch (e) {
             Components.utils.reportError("Calendar print dialog:refreshHtml: " + e);
         }
-
         printContent = "data:text/html," + encodeURIComponent(printContent);
         document.getElementById("content").src = printContent;
 
