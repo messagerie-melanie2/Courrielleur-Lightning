@@ -141,6 +141,12 @@ var calprint = {
           td.appendChild(img);
         }
 
+        // annulé
+        if (item.hasProperty("STATUS") && "CANCELLED"==item.getProperty("STATUS")) {
+          let style="text-decoration-line: line-through;background-color:#9AE46D;";
+          td.setAttribute("style", style);
+        }
+        
         // participants
         let parts=item.getAttendees({});
         if (parts && 0!=parts.length) {
