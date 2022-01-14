@@ -596,8 +596,8 @@ var calitip = {
                 // Ask what calendar to import into
                 let args = {};
                 args.calendars = calendars;
-                // CMel
-                args.matchingCals = matchingCals;
+                // CMel - #6207 proposer tous les calendriers
+                args.matchingCals = calendars;//matchingCals;
                 // Fin CMel
                 args.onOk = (aCal) => { targetCalendar = aCal; };
                 args.promptText = cal.l10n.getCalString("importPrompt");
