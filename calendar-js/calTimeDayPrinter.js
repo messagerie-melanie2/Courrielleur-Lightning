@@ -372,11 +372,22 @@ calTimeDayPrinter.prototype = {
       div.appendChild(img);
     }
     
+    function hexToRgb(hex) {
+      var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+      return result ? {
+        r: parseInt(result[1], 16),
+        g: parseInt(result[2], 16),
+        b: parseInt(result[3], 16)
+      } : null;
+    }
+
+    let rgbaString = hexToRgb(calColor).r+","+hexToRgb(calColor).g+","+hexToRgb(calColor).b;
+
     let style = "";
     // annulé #6286: Les évts barrés ne sont pas barrés lors de l'impression
-    if (item.hasProperty("STATUS") &&
-        "CANCELLED"==item.getProperty("STATUS")) {
-      style="text-decoration-line: line-through;background-color:#FFFFFF;color:#000000;";
+    if (item.hasProperty("STATUS") && "CANCELLED"==item.getProperty("STATUS")) 
+    {
+        style="text-decoration-line:line-through;background-color:rgba("+rgbaString+",0.5);";
     }
 
     // participants
