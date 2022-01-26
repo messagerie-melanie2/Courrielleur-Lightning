@@ -141,9 +141,9 @@ var calprint = {
           td.appendChild(img);
         }
 
-        // annulé
+        // annulé #6286: Les évts barrés ne sont pas barrés lors de l'impression
         if (item.hasProperty("STATUS") && "CANCELLED"==item.getProperty("STATUS")) {
-          let style="text-decoration-line: line-through;background-color:#9AE46D;";
+          let style="text-decoration-line:line-through;background-color:#FFFFFF;color:#000000;";
           td.setAttribute("style", style);
         }
         

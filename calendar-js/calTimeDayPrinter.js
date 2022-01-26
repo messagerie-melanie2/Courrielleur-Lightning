@@ -373,10 +373,10 @@ calTimeDayPrinter.prototype = {
     }
     
     let style = "";
-    // annulé
+    // annulé #6286: Les évts barrés ne sont pas barrés lors de l'impression
     if (item.hasProperty("STATUS") &&
         "CANCELLED"==item.getProperty("STATUS")) {
-      style="text-decoration-line: line-through;background-color:#9AE46D;"
+      style="text-decoration-line: line-through;background-color:#FFFFFF;color:#000000;";
     }
 
     // participants
