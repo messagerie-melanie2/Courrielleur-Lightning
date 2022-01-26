@@ -156,7 +156,7 @@ var calprint = {
         let style = "";
         if (item.hasProperty("STATUS") && "CANCELLED"==item.getProperty("STATUS")) 
         {
-          style="text-decoration:line-through solid white 2px;background-color:rgba("+rgbaString+",0.5);";
+          style="text-decoration: line-through;background-color:rgba("+rgbaString+",1);";
           td.setAttribute("style", style);
         }
         

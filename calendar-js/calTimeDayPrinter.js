@@ -387,7 +387,7 @@ calTimeDayPrinter.prototype = {
     // annulé #6286: Les évts barrés ne sont pas barrés lors de l'impression
     if (item.hasProperty("STATUS") && "CANCELLED"==item.getProperty("STATUS")) 
     {
-        style="text-decoration-line:line-through;background-color:rgba("+rgbaString+",0.5);";
+        style="text-decoration-line: line-through;background-color:rgba("+rgbaString+",1);";
     }
 
     // participants
