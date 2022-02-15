@@ -570,9 +570,9 @@ var calitip = {
         if (needsCalendar) {
             let calendars = cal.getCalendarManager().getCalendars({}).filter(calitip.isSchedulingCalendar);
 			// CMel
-            let matchingCals=null;
-            // Fin CMel
-            if (aItipItem.receivedMethod == "REQUEST") {
+            //let matchingCals=null;
+            // Fin CMel #6207 ne pas filtrer les agendas, tous les proposer
+            /*if (aItipItem.receivedMethod == "REQUEST") {
                 // try to further limit down the list to those calendars that
                 // are configured to a matching attendee;
                 let item = aItipItem.getItemList({})[0];
@@ -583,7 +583,7 @@ var calitip = {
                 if (matchingCals.length > 0) {
                     calendars = matchingCals;
                 }
-            }
+            }*/
 
             if (calendars.length == 0) {
                 let msg = cal.l10n.getLtnString("imipNoCalendarAvailable");
