@@ -249,20 +249,38 @@ calItipEmailTransport.prototype = {
                   // Strip leading "mailto:" if it exists.
                   let rId = recipient.id.replace(/^mailto:/i, "");
                   // CM2V6 - Test s'il s'agit d'un non participant
-                  if (recipient.role &&  "NON-PARTICIPANT" == recipient.role) {
-                  // Prevent trailing commas.
-                    if (toNonParticipantList.length > 0) {
-                        toNonParticipantList += ", ";
-                      }
-                      // Add this recipient id to the list.
-                      toNonParticipantList += rId;
-                  } else {
+                  if (recipient.role &&  "NON-PARTICIPANT" == recipient.role) 
+                  {
                     // Prevent trailing commas.
-                    if (toList.length > 0) {
-                      toList += ", ";
+                    if (toNonParticipantList.length > 0) 
+                    {
+                      toNonParticipantList += ", ";
                     }
                     // Add this recipient id to the list.
-                    toList += rId;
+                    toNonParticipantList += rId;
+                  } 
+                  else
+                  {
+                    // #6372 Diminution du nombre de notifications
+                    // Si l'attendee a accepté ou refusé l'evenement, et qu'il a l'attribut
+                    // X-MEL-EVENT-SAVED, alors il ne doit pas recevoir de notifications.
+                    if(recipient.getProperty("X-MEL-EVENT-SAVED") == 1 && (recipient.participationStatus == "ACCEPTED" || recipient.participationStatus == "DECLINED"))
+                    {
+                      try{cal.LOG("sendXpcomMail: No need to notify " + recipient.toString());}
+                      catch(ex){}
+                    }
+                    else
+                    {
+                      cal.LOG("X-MEL-EVENT-SAVED: " + recipient.getProperty("X-MEL-EVENT-SAVED"));
+                      cal.LOG("STATUS: " + recipient.participationStatus);
+                      // Prevent trailing commas.
+                      if (toList.length > 0) 
+                      {
+                        toList += ", ";
+                      }
+                      // Add this recipient id to the list.
+                      toList += rId;
+                    }
                   }
                   // Fin CM2V6 - Test s'il s'agit d'un non participant
                 } 
