@@ -279,7 +279,7 @@ function pasteFromClipboard() {
                     }
 
                     window.openDialog("chrome://calendar/content/chooseCalendarDialog.xul",
-                                      "_blank", "chrome,titlebar,modal,resizable", args);
+                                      "_blank", "chrome,titlebar,modal,resizable,centerscreen,width=400,height=300", args);
                 } else if (calendars.length == 1) {
                     destCal = calendars[0];
                 }

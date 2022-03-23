@@ -602,7 +602,7 @@ var calitip = {
                 args.onOk = (aCal) => { targetCalendar = aCal; };
                 args.promptText = cal.l10n.getCalString("importPrompt");
                 aWindow.openDialog("chrome://calendar/content/chooseCalendarDialog.xul",
-                                   "_blank", "chrome,titlebar,modal,resizable", args);
+                                   "_blank", "chrome,titlebar,modal,resizable,centerscreen,width=400,height=300", args);
             }
 
             if (targetCalendar) {

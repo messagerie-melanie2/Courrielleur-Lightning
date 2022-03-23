@@ -57,7 +57,7 @@ function publishEntireCalendar(aCalendar) {
             args.onOk = publishEntireCalendar;
             args.promptText = cal.l10n.getCalString("publishPrompt");
             openDialog("chrome://calendar/content/chooseCalendarDialog.xul",
-                       "_blank", "chrome,titlebar,modal,resizable", args);
+                       "_blank", "chrome,titlebar,modal,centerscreen,width=400,height=300", args);
             return;
         }
     }

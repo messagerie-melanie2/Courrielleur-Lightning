@@ -19,7 +19,7 @@
         onload="setTimeout('loadCalendars()',0);"
         ondialogaccept="return doOK();"
         ondialogextra1="return doExtra1();"
-        persist="screenX screenY height width">
+        persist="screenX screenY"><!-- height width">-->
 
     <script type="application/javascript" src="chrome://calendar/content/calendar-ui-utils.js"/>
     <script type="application/javascript"><![CDATA[
@@ -97,7 +97,7 @@
                 document.documentElement.getButton("accept").setAttribute("disabled", "true");
             }
 
-            window.sizeToContent();
+            //window.sizeToContent();
         }
         
         // CMel
