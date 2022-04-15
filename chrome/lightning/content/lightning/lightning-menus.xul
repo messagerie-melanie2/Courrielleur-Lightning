@@ -792,9 +792,9 @@
           </menupopup>
         </menu>
         <menuseparator id="appmenu_ltnBeforeUnifinderSection" />
+        <!--6689: Au démarrage du Courrielleur, forcer la fermeture du panneau "Recherche d'évènements" checked="true"-->
         <menuitem id="appmenu_ltnShowUnifinder"
                   type="checkbox"
-                  checked="true"
                   label="&showUnifinderCmd.label;"
                   observes="calendar_show_unifinder_command"
                   command="calendar_show_unifinder_command"/>
