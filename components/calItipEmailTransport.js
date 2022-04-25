@@ -139,7 +139,7 @@ calItipEmailTransport.prototype = {
                         break;
                     case "TENTATIVE":
                         subjectKey = "itipReplySubjectTentative";
-                        bodyKey = "itipReplyBodyAccept";
+                        bodyKey = "itipReplyBodyTentative";
                         break;
                     case "DECLINED":
                         subjectKey = "itipReplySubjectDecline";

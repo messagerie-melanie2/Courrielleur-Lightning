@@ -49,8 +49,22 @@ ltn.invitation = {
                             header = cal.l10n.getLtnString("itipCounterBody",
                                                            [sender[0].toString(), summary]);
                         } else {
-                            let statusString = (sender[0].participationStatus == "DECLINED" ?
-                                                "itipReplyBodyDecline" : "itipReplyBodyAccept");
+                            let statusString = ""
+                            switch (sender[0].participationStatus) 
+                            {
+                                case "ACCEPTED":
+                                    statusString = "itipReplyBodyAccept"
+                                    break;
+                                case "TENTATIVE":
+                                    statusString = "itipReplyBodyTentative"
+                                    break;
+                                case "DECLINED":
+                                    statusString = "itipReplyBodyDecline"
+                                    break;
+                                default:
+                                    statusString = "itipReplyBodyAccept"
+                                    break;
+                            }
                             header = cal.l10n.getLtnString(statusString, [sender[0].toString()]);
                         }
                     } else {
