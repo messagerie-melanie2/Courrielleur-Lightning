@@ -938,6 +938,10 @@ function toggleUnifinder() {
     goToggleToolbar("bottom-events-box", "calendar_show_unifinder_command");
     goToggleToolbar("calendar-view-splitter");
 
+    // #6689: Au démarrage du Courrielleur, forcer la fermeture du panneau "Recherche d'évènements"
+    // Repasser la visibilté normale lors d'un toggle
+    document.getElementById("bottom-events-box").style.visibility = "visible";
+    
     unifinderTreeView.treeElement.view = unifinderTreeView;
 
     // When the unifinder is hidden, refreshEventTree is not called. Make sure

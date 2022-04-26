@@ -12,7 +12,8 @@
   <script type="application/javascript" src="chrome://global/content/globalOverlay.js"/>
 
   <vbox id="calendar-view-box">
-    <vbox id="bottom-events-box" insertbefore="calendar-nav-control" persist="height">
+    <!-- #6689: Au démarrage du Courrielleur, forcer la fermeture du panneau "Recherche d'évènements"-->
+    <vbox style="visibility:collapse;" id="bottom-events-box" insertbefore="calendar-nav-control" persist="height">
       <hbox id="unifinder-searchBox" persist="collapsed">
         <box align="center">
           <menulist id="event-filter-menulist" value="P7D" persist="value">
