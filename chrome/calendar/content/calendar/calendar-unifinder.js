@@ -940,7 +940,7 @@ function toggleUnifinder() {
 
     // #6689: Au démarrage du Courrielleur, forcer la fermeture du panneau "Recherche d'évènements"
     // Repasser la visibilté normale lors d'un toggle
-    document.getElementById("bottom-events-box").style.visibility = "visible";
+    //document.getElementById("bottom-events-box").style.visibility = "visible";
     
     unifinderTreeView.treeElement.view = unifinderTreeView;
 

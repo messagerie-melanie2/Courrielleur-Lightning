@@ -13,10 +13,12 @@
 
   <vbox id="calendar-view-box">
     <!-- #6689: Au démarrage du Courrielleur, forcer la fermeture du panneau "Recherche d'évènements"-->
-    <vbox style="visibility:collapse;" id="bottom-events-box" insertbefore="calendar-nav-control" persist="height">
+    <!--<vbox style="visibility:collapse;" id="bottom-events-box" insertbefore="calendar-nav-control" persist="height">-->
+    <vbox id="bottom-events-box" insertbefore="calendar-nav-control" persist="height">
       <hbox id="unifinder-searchBox" persist="collapsed">
         <box align="center">
-          <menulist id="event-filter-menulist" value="P7D" persist="value">
+          <!-- #6689: Ne plus sauvegarder la pref utilisateur persist="value" -->
+          <menulist id="event-filter-menulist" value="P7D">
             <menupopup id="event-filter-menupopup" oncommand="refreshEventTree()">
               <menuitem id="event-filter-all"
                         label="&calendar.events.filter.all.label;"
