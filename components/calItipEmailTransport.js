@@ -264,23 +264,35 @@ calItipEmailTransport.prototype = {
                     // #6372 Diminution du nombre de notifications
                     // Si l'attendee a accepté ou refusé l'evenement, et qu'il a l'attribut
                     // X-MEL-EVENT-SAVED, alors il ne doit pas recevoir de notifications.
-                    if(recipient.getProperty("X-MEL-EVENT-SAVED") == 1 && (recipient.participationStatus == "ACCEPTED" || recipient.participationStatus == "DECLINED"))
+                    try
                     {
-                      try{cal.LOG("sendXpcomMail: No need to notify " + recipient.toString());}
-                      catch(ex){}
-                    }
-                    else
-                    {
-                      cal.LOG("X-MEL-EVENT-SAVED: " + recipient.getProperty("X-MEL-EVENT-SAVED"));
-                      cal.LOG("STATUS: " + recipient.participationStatus);
-                      // Prevent trailing commas.
-                      if (toList.length > 0) 
+                      //#6706 Envoi de la notification en cas de suppression (sujet "événement annulé")
+                      //#6372 Pas de notification lors de certaines modifications
+                      if(!aSubject.includes("nement annu") && recipient.getProperty("X-MEL-EVENT-SAVED") == 1 && (recipient.participationStatus == "ACCEPTED" || recipient.participationStatus == "DECLINED"))
                       {
-                        toList += ", ";
+                        cal.LOG("SUBJECT: "+aSubject);
+                        cal.LOG("sendXpcomMail: No need to notify " + recipient.toString());
+                      } 
+                      else
+                      {
+                        cal.LOG("Ajout de " + recipient.toString() + " à la liste des destinataires.");
+                        cal.LOG("X-MEL-EVENT-SAVED: " + recipient.getProperty("X-MEL-EVENT-SAVED"));
+                        cal.LOG("STATUS: " + recipient.participationStatus);
+                        // Prevent trailing commas.
+                        if (toList.length > 0) 
+                        {
+                          toList += ", ";
+                        }
+                        // Add this recipient id to the list.
+                        toList += rId;
                       }
-                      // Add this recipient id to the list.
-                      toList += rId;
                     }
+                    catch(ex)
+                    {
+                      cal.LOG("Attention: Une erreur est survenue lors de l'analyse des utilisateurs à notifier: " + ex);
+                      cal.LOG("L'execution continue.");
+                    }
+                    
                   }
                   // Fin CM2V6 - Test s'il s'agit d'un non participant
                 } 
