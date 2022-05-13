@@ -288,10 +288,13 @@ var calitip = {
             let disallow = foundItems[0].getProperty("X-MICROSOFT-DISALLOW-COUNTER");
             disallowedCounter = disallow && disallow == "TRUE";
         }
-        if (rc == Components.interfaces.calIErrors.CAL_IS_READONLY) {
+        if (rc == Components.interfaces.calIErrors.CAL_IS_READONLY) 
+        {
             // No writable calendars, tell the user about it
             data.label = cal.l10n.getLtnString("imipBarNotWritable");
-        } else if (Components.isSuccessCode(rc) && !actionFunc) {
+        }
+        /*else if (Components.isSuccessCode(rc) && !actionFunc) 
+        {
             // This case, they clicked on an old message that has already been
             // added/updated, we want to tell them that.
             data.label = cal.l10n.getLtnString("imipBarAlreadyProcessedText");
@@ -337,7 +340,37 @@ var calitip = {
             } else if (itipItem.receivedMethod == "DECLINECOUNTER") {
                 data.label = cal.l10n.getLtnString("imipBarDeclineCounterText");
             }
-        } else if (Components.isSuccessCode(rc)) {
+        } 
+        else*/ 
+        if (Components.isSuccessCode(rc)) 
+        {
+          var sequenceError = false;
+          //#6723: La sequence n'est pas prise en compte pour une invitation uniquement pour une mise a jour
+          if (foundItems && foundItems.length > 0)
+          {
+            let comparison;
+            for (let item of itipItem.getItemList({})) 
+            {
+                comparison = calitip.compareSequence(item, foundItems[foundItems.length-1]);
+                if (comparison == 1) {
+                  sequenceError = true;
+                  data.label = cal.l10n.getLtnString("imipBarCounterErrorText");
+                  break;
+                } else if (comparison == -1) {
+                  data.showItems.push("imipDetailsButton");
+                  sequenceError = true;
+                  data.label = cal.l10n.getLtnString("imipBarCounterPreviousVersionText");
+                }
+            }
+          }
+          //#6723: FIN La sequence n'est pas prise en compte pour une invitation uniquement pour une mise a jour
+          
+          if(sequenceError == true)
+          {
+            data.showItems.push("imipDetailsButton");
+          }
+          else
+          {
             cal.LOG("iTIP options on: " + actionFunc.method);
             switch (actionFunc.method) {
                 case "PUBLISH:UPDATE":
@@ -439,6 +472,7 @@ var calitip = {
                     data.label = cal.l10n.getLtnString("imipBarUnsupportedText");
                     break;
             }
+          }
         } else {
             data.label = cal.l10n.getLtnString("imipBarUnsupportedText");
         }
@@ -547,70 +581,75 @@ var calitip = {
      * @param {DOMWindpw} aWindow       The window to open the dialog on.
      * @return {Boolean}                True, if a calendar was selected or no selection is needed.
      */
-    promptCalendar: function(aMethod, aItipItem, aWindow) {
-        let needsCalendar = false;
-        let targetCalendar = null;
-        switch (aMethod) {
-            // methods that don't require the calendar chooser:
-            case "REFRESH":
-            case "REQUEST:UPDATE":
-            case "REQUEST:UPDATE-MINOR":
-            case "PUBLISH:UPDATE":
-            case "REPLY":
-            case "CANCEL":
-            case "COUNTER":
-            case "DECLINECOUNTER":
-                needsCalendar = false;
-                break;
-            default:
-                needsCalendar = true;
-                break;
-        }
+    promptCalendar: function(aMethod, aItipItem, aWindow) 
+    {
+      console.log("promptCalendar");
+      let needsCalendar = false;
+      let targetCalendar = null;
+      switch (aMethod) {
+          // methods that don't require the calendar chooser:
+          case "REFRESH":
+          case "REQUEST:UPDATE":
+          case "REQUEST:UPDATE-MINOR":
+          case "PUBLISH:UPDATE":
+          case "REPLY":
+          case "CANCEL":
+          case "COUNTER":
+          case "DECLINECOUNTER":
+              needsCalendar = false;
+              break;
+          default:
+              needsCalendar = true;
+              break;
+      }
 
-        if (needsCalendar) {
-            let calendars = cal.getCalendarManager().getCalendars({}).filter(calitip.isSchedulingCalendar);
-			// CMel
-            //let matchingCals=null;
-            // Fin CMel #6207 ne pas filtrer les agendas, tous les proposer
-            /*if (aItipItem.receivedMethod == "REQUEST") {
-                // try to further limit down the list to those calendars that
-                // are configured to a matching attendee;
-                let item = aItipItem.getItemList({})[0];
-                // CMel
-                matchingCals = calendars.filter(calendar => calitip.getInvitedAttendee(item, calendar) != null);
-                // Fin CMel
-                // if there's none, we will show the whole list of calendars:
-                if (matchingCals.length > 0) {
-                    calendars = matchingCals;
-                }
-            }*/
+      if (needsCalendar) {
+          let calendars = cal.getCalendarManager().getCalendars({}).filter(calitip.isSchedulingCalendar);
+          // CMel
+          //let matchingCals=null;
+          // Fin CMel #6207 ne pas filtrer les agendas, tous les proposer
+          /*if (aItipItem.receivedMethod == "REQUEST") 
+          {
+              // try to further limit down the list to those calendars that
+              // are configured to a matching attendee;
+              let item = aItipItem.getItemList({})[0];
+              // CMel
+              //matchingCals = calendars.filter(calendar => calitip.getInvitedAttendee(item, calendar, aWindow) != null);
+              
+              // Fin CMel 
+              // if there's none, we will show the whole list of calendars:
+              //if (matchingCals != null && matchingCals.length > 0) {
+                  //calendars = matchingCals;
+                  //aWindow.alert("calendars: " + calendars);
+              //}
+          }*/
+          
+          if (calendars.length == 0) {
+              let msg = cal.l10n.getLtnString("imipNoCalendarAvailable");
+              aWindow.alert(msg);
+          } else if (calendars.length == 1) {
+              // There's only one calendar, so it's silly to ask what calendar
+              // the user wants to import into.
+              targetCalendar = calendars[0];
+          } else {
+              // Ask what calendar to import into
+              let args = {};
+              args.calendars = calendars;
+              // CMel - #6207 proposer tous les calendriers
+              args.matchingCals = calendars;//matchingCals;
+              // Fin CMel
+              args.onOk = (aCal) => { targetCalendar = aCal; };
+              args.promptText = cal.l10n.getCalString("importPrompt");
+              aWindow.openDialog("chrome://calendar/content/chooseCalendarDialog.xul",
+                                 "_blank", "chrome,titlebar,modal,resizable,centerscreen,width=400,height=300", args);
+          }
 
-            if (calendars.length == 0) {
-                let msg = cal.l10n.getLtnString("imipNoCalendarAvailable");
-                aWindow.alert(msg);
-            } else if (calendars.length == 1) {
-                // There's only one calendar, so it's silly to ask what calendar
-                // the user wants to import into.
-                targetCalendar = calendars[0];
-            } else {
-                // Ask what calendar to import into
-                let args = {};
-                args.calendars = calendars;
-                // CMel - #6207 proposer tous les calendriers
-                args.matchingCals = calendars;//matchingCals;
-                // Fin CMel
-                args.onOk = (aCal) => { targetCalendar = aCal; };
-                args.promptText = cal.l10n.getCalString("importPrompt");
-                aWindow.openDialog("chrome://calendar/content/chooseCalendarDialog.xul",
-                                   "_blank", "chrome,titlebar,modal,resizable,centerscreen,width=400,height=300", args);
-            }
+          if (targetCalendar) {
+              aItipItem.targetCalendar = targetCalendar;
+          }
+      }
 
-            if (targetCalendar) {
-                aItipItem.targetCalendar = targetCalendar;
-            }
-        }
-
-        return !needsCalendar || targetCalendar != null;
+      return !needsCalendar || targetCalendar != null;
     },
 
     /**
@@ -1803,6 +1842,7 @@ ItipItemFinder.prototype = {
                                                 }
                                                 newItem.removeAttendee(att);
                                                 att = att.clone();
+                                                cal.LOG("SWITCH " + att.participationStatus + " to " + partStat);
                                                 att.participationStatus = partStat;
                                                 newItem.addAttendee(att);
                                                 // CMel
@@ -1866,6 +1906,7 @@ ItipItemFinder.prototype = {
                                         let newPS = itipItemItem.getAttendeeById(replyer.id)
                                                                 .participationStatus;
                                         replyer.participationStatus = newPS;
+                                        cal.LOG("SWITCH 2" + replyer.participationStatus + " to " + newPS);
                                         newItem.addAttendee(replyer);
 
                                         // Make sure the provider-specified properties are copied over
@@ -1970,6 +2011,7 @@ ItipItemFinder.prototype = {
                                     }
                                 }
                                 if (att) {
+                                  cal.LOG("SWITCH 3" + att.participationStatus + " to " + partStat);
                                     att.participationStatus = partStat;
                                 } else {
                                     cal.ASSERT(att, "no attendee to reply REQUEST!");
@@ -2006,7 +2048,7 @@ ItipItemFinder.prototype = {
             }
         }
 
-        cal.LOG("iTIP operations: " + operations.length);
+        //cal.LOG("iTIP operations: " + operations.length);
         let actionFunc = null;
         if (operations.length > 0) {
         	// CMel - Bugzilla 168680 - Attachments in action
@@ -2022,16 +2064,17 @@ ItipItemFinder.prototype = {
             // Fin CMel
             actionFunc.method = actionMethod;
         }
-
-        this.mOptionsFunc(this.mItipItem, rc, actionFunc, this.mFoundItems);
+        if(this.mOptionsFunc != null)
+          this.mOptionsFunc(this.mItipItem, rc, actionFunc, this.mFoundItems);
     },
 
     onGetResult: function(aCalendar, aStatus, aItemType, aDetail, aCount, aItems) {
         if (Components.isSuccessCode(aStatus)) {
-        	// CMel
+        	// CMel 
+          //#6723: FIN La sequence n'est pas prise en compte pour une invitation uniquement pour une mise a jour
             //cal.LOG("*** calItipUtils.jsm onGetResult receivedMethod:"+this.mItipItem.receivedMethod);
             //cal.LOG("*** calItipUtils.jsm onGetResult localStatus:"+this.mItipItem.localStatus);
-            if (this.mItipItem.receivedMethod == "REQUEST" && this.mItipItem.localStatus != "~rdvtraite") {
+            /*if (this.mItipItem.receivedMethod == "REQUEST" && this.mItipItem.localStatus != "~rdvtraite") {
               let item = this.mItipItem.getItemList({})[0];
               let seq = cal.itip.getSequence(item);
               //cal.LOG("*** calItipUtils.jsm REQUEST ~rdvtraite!=this.mItipItem.localStatus SEQUENCE:"+seq);
@@ -2040,7 +2083,7 @@ ItipItemFinder.prototype = {
                 //cal.LOG("*** calItipUtils.jsm REQUEST ~rdvtraite!=this.mItipItem.localStatus");
                 return;
               }
-            }
+            }*/
             // Fin CMel
             this.mFoundItems = this.mFoundItems.concat(aItems);
         }
