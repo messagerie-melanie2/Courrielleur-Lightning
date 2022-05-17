@@ -2074,17 +2074,27 @@ ItipItemFinder.prototype = {
           //#6723: FIN La sequence n'est pas prise en compte pour une invitation uniquement pour une mise a jour
             //cal.LOG("*** calItipUtils.jsm onGetResult receivedMethod:"+this.mItipItem.receivedMethod);
             //cal.LOG("*** calItipUtils.jsm onGetResult localStatus:"+this.mItipItem.localStatus);
-            /*if (this.mItipItem.receivedMethod == "REQUEST" && this.mItipItem.localStatus != "~rdvtraite") {
+            if (this.mItipItem.receivedMethod == "REQUEST" && this.mItipItem.localStatus != "~rdvtraite") {
               let item = this.mItipItem.getItemList({})[0];
               let seq = cal.itip.getSequence(item);
               //cal.LOG("*** calItipUtils.jsm REQUEST ~rdvtraite!=this.mItipItem.localStatus SEQUENCE:"+seq);
-
-              if (seq == null || seq == 0) {
+              try
+              {
+                if(calitip.compareSequence(item, this.mFoundItems.concat(aItems)[this.mFoundItems.concat(aItems).length-1]) == -1)
+                  this.mFoundItems = this.mFoundItems.concat(aItems);
+              }
+              catch(ex)
+              {
+                return;
+              }
+              if (this.mItipItem.getItemList({}).length == 1) //(seq == null || seq == 0)) 
+              {
                 //cal.LOG("*** calItipUtils.jsm REQUEST ~rdvtraite!=this.mItipItem.localStatus");
                 return;
               }
-            }*/
+            }
             // Fin CMel
+            //if(this.mFoundItems.concat(aItems) != null)
             this.mFoundItems = this.mFoundItems.concat(aItems);
         }
     }
