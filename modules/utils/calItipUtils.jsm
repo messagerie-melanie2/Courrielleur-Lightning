@@ -354,12 +354,12 @@ var calitip = {
                 comparison = calitip.compareSequence(item, foundItems[foundItems.length-1]);
                 if (comparison == 1) {
                   sequenceError = true;
-                  data.label = cal.l10n.getLtnString("imipBarCounterErrorText");
+                  data.label = cal.l10n.getLtnString("imipBarUnsupportedText");
                   break;
                 } else if (comparison == -1) {
                   data.showItems.push("imipDetailsButton");
                   sequenceError = true;
-                  data.label = cal.l10n.getLtnString("imipBarCounterPreviousVersionText");
+                  data.label = cal.l10n.getLtnString("imipBarAlreadyProcessedText");
                 }
             }
           }
