@@ -243,7 +243,7 @@ var calitip = {
     getMethodText: function(method) {
         switch (method) {
             case "REFRESH": return cal.l10n.getLtnString("imipBarRefreshText");
-            case "REQUEST": return cal.l10n.getLtnString("imipBarRequestText");
+            case "REQUEST": return cal.l10n.getLtnString("imipBarAlreadyProcessedText");//return cal.l10n.getLtnString("imipBarRequestText");
             case "PUBLISH": return cal.l10n.getLtnString("imipBarPublishText");
             case "CANCEL": return cal.l10n.getLtnString("imipBarCancelText");
             case "REPLY": return cal.l10n.getLtnString("imipBarReplyText");
@@ -288,11 +288,13 @@ var calitip = {
             let disallow = foundItems[0].getProperty("X-MICROSOFT-DISALLOW-COUNTER");
             disallowedCounter = disallow && disallow == "TRUE";
         }
+        
         if (rc == Components.interfaces.calIErrors.CAL_IS_READONLY) 
         {
             // No writable calendars, tell the user about it
             data.label = cal.l10n.getLtnString("imipBarNotWritable");
         }
+        
         /*else if (Components.isSuccessCode(rc) && !actionFunc) 
         {
             // This case, they clicked on an old message that has already been
@@ -342,6 +344,7 @@ var calitip = {
             }
         } 
         else*/ 
+        
         if (Components.isSuccessCode(rc)) 
         {
           var sequenceError = false;
@@ -386,6 +389,7 @@ var calitip = {
                 case "REQUEST:UPDATE":
                 case "REQUEST:NEEDS-ACTION":
                 case "REQUEST": {
+                    data.label = cal.l10n.getLtnString("imipBarRequestText");
                     let isRecurringMaster = false;
                     for (let item of itipItem.getItemList({})) {
                         if (item.recurrenceInfo) {
