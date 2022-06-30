@@ -368,7 +368,8 @@ var calitip = {
           }
           //#6723: FIN La sequence n'est pas prise en compte pour une invitation uniquement pour une mise a jour
           
-          if(sequenceError == true)
+          // #6846 actionFunc null
+          if(sequenceError == true || actionFunc == null)
           {
             data.showItems.push("imipDetailsButton");
           }
