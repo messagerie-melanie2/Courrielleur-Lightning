@@ -382,13 +382,15 @@ ltn.invitation = {
                 // the element was added
                 // we only need to check for simple elements here: attendee or organizer row
                 // must have been there before
-                if (content) {
+                // #6928: Desactiver le mode de comparaison d'une invitation avec l'évènemet correspondant
+                if (Preferences.get("calendar.invitations.highlightChanges", true) && content) {
                     _content2Child(content, "added", content.textContent);
                 }
             } else if (!newRow.hidden && !oldRow.hidden) {
                 // the element may have been modified
+                // #6928: Desactiver le mode de comparaison d'une invitation avec l'évènemet correspondant
                 if (content) {
-                    if (content.textContent != oldContent.textContent) {
+                    if (Preferences.get("calendar.invitations.highlightChanges", true) && (content.textContent != oldContent.textContent)) {
                         _content2Child(content, "added", content.textContent);
                         _content2Child(content, "newline", null, false);
                         _content2Child(content, "removed", oldContent.textContent, false);
