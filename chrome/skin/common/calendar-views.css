@@ -881,6 +881,8 @@ calendar-editable-item[status="CANCELLED"],
 calendar-month-day-box-item[status="CANCELLED"],
 agenda-richlist-item[status="CANCELLED"] {
     opacity: 0.5;
+    /* #6851: barrer les evenements refuses */
+    text-decoration: line-through;
 }
 
 calendar-month-day-box-item[status="CANCELLED"] .calendar-color-box,
