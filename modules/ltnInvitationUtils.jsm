@@ -374,7 +374,8 @@ ltn.invitation = {
                 // element was removed
                 // we only need to check for simple elements here: attendee or organizer row
                 // cannot be removed
-                if (oldContent) {
+                // #6928: Desactiver le mode de comparaison d'une invitation avec l'évènemet correspondant
+                if (Preferences.get("calendar.invitations.highlightChanges", true) && oldContent) {
                     _content2Child(content, "removed", oldContent.textContent);
                     row.hidden = false;
                 }
@@ -405,7 +406,8 @@ ltn.invitation = {
                         let oldAttendees = _getAttendees(aOldDoc, aElement);
                         // decorate newly added attendees
                         for (let att of Object.keys(attendees)) {
-                            if (!(att in oldAttendees)) {
+                            // #6928: Desactiver le mode de comparaison d'une invitation avec l'évènemet correspondant
+                            if (Preferences.get("calendar.invitations.highlightChanges", true) && !(att in oldAttendees)) {
                                 _content2Child(attendees[att], "added", att);
                             }
                         }
@@ -415,7 +417,8 @@ ltn.invitation = {
                             let notExcluded = excludeAddress == "" ||
                                                !att.includes(excludeAddress);
                             // decorate removed attendees
-                            if (!(att in attendees) && notExcluded) {
+                            // #6928: Desactiver le mode de comparaison d'une invitation avec l'évènemet correspondant
+                            if (Preferences.get("calendar.invitations.highlightChanges", true) && !(att in attendees) && notExcluded) {
                                 _content2Child(oldAttendees[att], "removed", att);
                                 content.appendChild(oldAttendees[att].parentNode.cloneNode(true));
                             } else if ((att in attendees) && notExcluded) {
@@ -430,7 +433,8 @@ ltn.invitation = {
                                     return oldAtts.getNamedItem(name).value !=
                                            newAtts.getNamedItem(name).value;
                                 };
-                                if (["role", "partstat", "usertype"].some(hasChanged)) {
+                                // #6928: Desactiver le mode de comparaison d'une invitation avec l'évènemet correspondant
+                                if (Preferences.get("calendar.invitations.highlightChanges", true) && ["role", "partstat", "usertype"].some(hasChanged)) {
                                     _content2Child(attendees[att], "modified", att);
                                 }
                             }
