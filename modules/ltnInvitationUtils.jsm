@@ -222,7 +222,10 @@ ltn.invitation = {
         // DESCRIPTION field
         let eventDescription = (aEvent.getProperty("DESCRIPTION") || "")
                                     /* Remove the useless "Outlookism" squiggle. */
-                                    .replace("*~*~*~*~*~*~*~*~*~*", "");
+                                    .replace("*~*~*~*~*~*~*~*~*~*", "")
+                                    /* #6823 Suppression caractères Gmail */
+                                    .replace("-::~:~::~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~::~:~::-\n", "")
+                                    .replace("-::~:~::~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~::~:~::-", "");
         field("description", eventDescription, true);
 
         // URL
