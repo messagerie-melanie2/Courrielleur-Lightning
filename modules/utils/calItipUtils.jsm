@@ -357,7 +357,9 @@ var calitip = {
                 comparison = calitip.compareSequence(item, foundItems[foundItems.length-1]);
                 if (comparison == 1) {
                   sequenceError = true;
-                  data.label = cal.l10n.getLtnString("imipBarUnsupportedText");
+                  //data.label = cal.l10n.getLtnString("imipBarUnsupportedText");
+                  //#7031: Annulation evt transmis depuis messagerie externe
+                  data.label = cal.l10n.getLtnString("imipBarCancelText");
                   break;
                 } else if (comparison == -1) {
                   data.showItems.push("imipDetailsButton");
