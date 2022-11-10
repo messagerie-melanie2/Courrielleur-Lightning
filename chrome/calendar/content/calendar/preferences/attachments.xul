@@ -69,13 +69,10 @@
                           preference="calendar.attachments.active"
                           label="&pref.attachments.active;"/>
             </hbox>
-            <!--#6275: Problème avec les pièces jointes dans les événements-->
             <hbox align="center" flex="1">
-                <checkbox style="display: none;"
-                          id="attachmentscaldavcompatible"
+                <checkbox id="attachmentscaldavcompatible"
                           preference="calendar.attachments.caldav.compatible"
-                          label="&pref.attachments.caldav.compatible;"
-                          checked="false"/>
+                          label="&pref.attachments.caldav.compatible;"/>
             </hbox>
         </groupbox>
 
