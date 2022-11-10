@@ -180,17 +180,19 @@ var calattachments = {
                     localFile.permissions = 0o555;
                   });
                 }
-              }
-              catch (err) {
-                cal.WARN("Failed to write binary attachment in \"" + directory.path + fileName + "\"");
-              }
-              finally {
+                
+                //#6275: Problème avec les pièces jointes
+                //finally {
                 // Copy the uri of the attachment to open
                 attachment.uri = Services.io.newURI("file://" + localFile.path, null, null);
                 attachment.deleteParameter("ENCODING");
                 attachment.setParameter("VALUE", "BINARY");
                 
                 cal.LOG("Attachment uri: " + attachment.uri.spec);
+                //}
+              }
+              catch (err) {
+                cal.WARN("Failed to write binary attachment in \"" + directory.path + fileName + "\"");
               }
             }
           }
