@@ -355,13 +355,17 @@ var calitip = {
             for (let item of itipItem.getItemList({})) 
             {
                 comparison = calitip.compareSequence(item, foundItems[foundItems.length-1]);
-                if (comparison == 1) {
-                  sequenceError = true;
+                if (comparison == 1) 
+                {
+                  //#7392 Récurrence: Occurence modifiée (changement d'heure) lorsque le participant accepte l'occurencde le label signal eveneemnt annulé
+                  /*sequenceError = true;
                   //data.label = cal.l10n.getLtnString("imipBarUnsupportedText");
                   //#7031: Annulation evt transmis depuis messagerie externe
                   data.label = cal.l10n.getLtnString("imipBarCancelText");
-                  break;
-                } else if (comparison == -1) {
+                  break;*/
+                } 
+                else if (comparison == -1) 
+                {
                   data.showItems.push("imipDetailsButton");
                   sequenceError = true;
                   data.label = cal.l10n.getLtnString("imipBarAlreadyProcessedText");
@@ -378,7 +382,8 @@ var calitip = {
           else
           {
             cal.LOG("iTIP options on: " + actionFunc.method);
-            switch (actionFunc.method) {
+            switch (actionFunc.method) 
+            {
                 case "PUBLISH:UPDATE":
                 case "REQUEST:UPDATE-MINOR":
                     data.label = cal.l10n.getLtnString("imipBarUpdateText");
@@ -461,6 +466,8 @@ var calitip = {
                 }
                 case "CANCEL": {
                     data.showItems.push("imipDeleteButton");
+                    //#7031: Annulation d'événement depuis messagerie externe: Ce message contient une annulation d'événement que Lightning ne peut pas traiter.
+                    data.label = cal.l10n.getLtnString("imipBarCancelText");
                     break;
                 }
                 case "REFRESH": {
