@@ -294,8 +294,7 @@ var calitip = {
             // No writable calendars, tell the user about it
             data.label = cal.l10n.getLtnString("imipBarNotWritable");
         }
-        
-        /*else if (Components.isSuccessCode(rc) && !actionFunc) 
+        else if (Components.isSuccessCode(rc) && (actionFunc == null || !actionFunc)) 
         {
             // This case, they clicked on an old message that has already been
             // added/updated, we want to tell them that.
@@ -343,9 +342,7 @@ var calitip = {
                 data.label = cal.l10n.getLtnString("imipBarDeclineCounterText");
             }
         } 
-        else*/ 
-        
-        if (Components.isSuccessCode(rc)) 
+        else if (Components.isSuccessCode(rc)) 
         {
           var sequenceError = false;
           //#6723: La sequence n'est pas prise en compte pour une invitation uniquement pour une mise a jour
