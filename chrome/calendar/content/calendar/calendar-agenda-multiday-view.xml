@@ -613,8 +613,10 @@
             if (this.mCreatedNewEvent) {
                 this.mEventToEdit = aOccurrence;
             }
-
-            this.mEventMapTimeout = setTimeout(() => this.relayout(), 5);
+            try{
+                this.mEventMapTimeout = setTimeout(() => this.relayout(), 5);
+            }
+            catch{}
         ]]></body>
       </method>
 

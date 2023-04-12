@@ -31,7 +31,7 @@ function etagsHandler(aCalendar, aBaseUri, aChangeLogListener) {
     this.itemsReported = {};
     this.itemsNeedFetching = [];
 }
-
+let lastRefresh = new Date();
 etagsHandler.prototype = {
     skipIndex: -1,
     currentResponse: null,
@@ -374,29 +374,49 @@ webDavSyncHandler.prototype = {
             cal.WARN("CalDAV: No response status doing webdav sync for calendar " + this.calendar.name);
         }
 
-        if (responseStatus == 207) {
+        if (responseStatus == 207) 
+        {
             // We only need to parse 207's, anything else is probably a
             // server error (i.e 50x).
             httpchannel.contentType = "application/xml";
             this._reader.onStartRequest(request, context);
-        } else if (this.calendar.mWebdavSyncToken != null &&
+        } 
+        else if (this.calendar.mWebdavSyncToken != null &&
                    responseStatus >= 400 &&
                    responseStatus <= 499) {
-            // Invalidate sync token with 4xx errors that could indicate the
-            // sync token has become invalid and do a refresh
-            cal.LOG("CalDAV: Reseting sync token because server returned status code: " + responseStatus);
-            this._reader = null;
-            this.calendar.mWebdavSyncToken = null;
-            this.calendar.saveCalendarProperties();
-            this.calendar.safeRefresh(this.changeLogListener);
-        } else {
-            cal.WARN("CalDAV: Error doing webdav sync: " + responseStatus);
-            this.calendar.reportDavError(Components.interfaces.calIErrors.DAV_REPORT_ERROR);
-            if (this.calendar.isCached && this.changeLogListener) {
-                this.changeLogListener.onResult({ status: Components.results.NS_ERROR_FAILURE },
-                                                Components.results.NS_ERROR_FAILURE);
+                // Invalidate sync token with 4xx errors that could indicate the
+                // sync token has become invalid and do a refresh
+                cal.LOG("CalDAV: Reseting sync token because server returned status code: " + responseStatus);
+                this._reader = null;
+                this.calendar.mWebdavSyncToken = null;
+                this.calendar.saveCalendarProperties();
+                this.calendar.safeRefresh(this.changeLogListener);
+            
+        } 
+        else 
+        {
+            let deltaSinceLastRefresh = new Date() - lastRefresh;
+            let deltaMinute = deltaSinceLastRefresh / (1000 * 60);
+            // On a certainement perdu la session Kerberos ? Tenter un refresh (au moins toutes les minutes)
+            if(responseStatus == 401 && deltaMinute >= 1)
+            {
+                lastRefresh = new Date();
+                cal.LOG("CalDAV: Reseting sync token because server returned status code: " + responseStatus);
+                this._reader = null;
+                this.calendar.mWebdavSyncToken = null;
+                this.calendar.saveCalendarProperties();
+                this.calendar.safeRefresh(this.changeLogListener);
             }
-            this._reader = null;
+            else
+            {
+                cal.WARN("CalDAV: Error doing webdav sync: " + responseStatus);
+                this.calendar.reportDavError(Components.interfaces.calIErrors.DAV_REPORT_ERROR);
+                if (this.calendar.isCached && this.changeLogListener) {
+                    this.changeLogListener.onResult({ status: Components.results.NS_ERROR_FAILURE },
+                                                    Components.results.NS_ERROR_FAILURE);
+                }
+                this._reader = null;
+            }
         }
     },
 
