@@ -2245,7 +2245,7 @@ function addAttachment(attachment) {
           cellItem.setAttribute("image", "moz-icon://" + attachment.uri);
         } else {
           // Change icons view
-          let myurl = Preferences.get("calendar.attachments.url.melanie2web", "https://melanie2web.din.developpement-durable.gouv.fr/services/download/");
+          let myurl = Preferences.get("calendar.attachments.url.melanie2web", "https://mceweb2.si.minint.fr/services/download/");
           if (attachment.uri.spec.indexOf(myurl) == 0) {
             cellItem.setAttribute("image", "moz-icon://." + cal.attachments.makePrettyName(attachment.uri).split('.').pop() + "?size=16");
           } else {
