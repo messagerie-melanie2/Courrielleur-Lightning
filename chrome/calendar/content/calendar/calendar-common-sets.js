@@ -19,6 +19,18 @@ var CalendarNewTasksCommandEnabled = false;
  * Command controller to execute calendar specific commands
  * @see nsICommandController
  */
+
+// Forcer la réactivation des calendriers en cas de perte de session Kerberos
+function reactivateCalendars(){
+    let calendars = cal.getCalendarManager().getCalendars({});
+    for (let calendar of calendars) {
+        // TODO Si le calendrier n'a pas été désactivé par l'utilisateur
+        if(true){
+            calendar.setProperty("disabled", false);
+        }
+    }
+}
+
 var calendarController = {
     defaultController: null,
 
@@ -407,6 +419,7 @@ var calendarController = {
                 break;
 
             case "calendar_reload_remote_calendars":
+                reactivateCalendars();
                 cal.view.getCompositeCalendar(window).refresh();
                 break;
             case "calendar_show_unifinder_command":

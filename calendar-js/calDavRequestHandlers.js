@@ -380,13 +380,6 @@ webDavSyncHandler.prototype = {
             // server error (i.e 50x).
             httpchannel.contentType = "application/xml";
             this._reader.onStartRequest(request, context);
-
-            let currentStatus = this.calendar.getProperty("currentStatus");
-            if (!Components.isSuccessCode(currentStatus))
-            {
-                console.log("Calendar error state: "+currentStatus);
-                // TODO Trouver un moyen de supprimer le status d'erreur
-            }
         }
         else if (this.calendar.mWebdavSyncToken != null && responseStatus >= 400 && responseStatus <= 499)
         {
@@ -400,24 +393,13 @@ webDavSyncHandler.prototype = {
         }
         else
         {
-            if(responseStatus == 401)
-            {
-                // On garde le reader en cas de perte de session Kerberos
-                this.calendar.reportDavError(Components.interfaces.calIErrors.DAV_REPORT_ERROR);
-                this._reader.onStartRequest(request, context);
-                // On ne désactive pas le calendrier en cas de perte de session Kerberos
-                this.calendar.mDisabled = false;
+            cal.WARN("CalDAV: Error doing webdav sync: " + responseStatus);
+            this.calendar.reportDavError(Components.interfaces.calIErrors.DAV_REPORT_ERROR);
+            if (this.calendar.isCached && this.changeLogListener) {
+                this.changeLogListener.onResult({ status: Components.results.NS_ERROR_FAILURE },
+                                                Components.results.NS_ERROR_FAILURE);
             }
-            else
-            {
-                cal.WARN("CalDAV: Error doing webdav sync: " + responseStatus);
-                this.calendar.reportDavError(Components.interfaces.calIErrors.DAV_REPORT_ERROR);
-                if (this.calendar.isCached && this.changeLogListener) {
-                    this.changeLogListener.onResult({ status: Components.results.NS_ERROR_FAILURE },
-                                                    Components.results.NS_ERROR_FAILURE);
-                }
-                this._reader = null;
-            }
+            this._reader = null;
         }
     },
 
