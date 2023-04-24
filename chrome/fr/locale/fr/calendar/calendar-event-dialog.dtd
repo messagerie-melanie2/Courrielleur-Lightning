@@ -43,7 +43,7 @@
    - they still fit in. -->
 <!-- CMel -->
 <!ENTITY event.attendees.notify.label                "Notifier les participants par courriel">
-<!ENTITY event.attendees.notify.tooltip              "Notifier par courriel les participants. S'il s'agit d'utilisateurs de Mél, leur agenda prendra automatiquement en compte ces modifications, même si la case est décochée">
+<!ENTITY event.attendees.notify.tooltip              "Notifier par courriel les participants. S'il s'agit d'utilisateurs de MCE, leur agenda prendra automatiquement en compte ces modifications, même si la case est décochée">
 <!-- CMel -->
 <!ENTITY event.attendees.notify.accesskey            "f">
 <!ENTITY event.attendees.notifyundisclosed.label     "Invitation séparée pour chaque participant">
