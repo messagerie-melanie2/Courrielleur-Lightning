@@ -30,7 +30,7 @@ var CMEL_VEILLEMIN_R=-1;
 // démarrage automatique (depuis lightning dans le cas ou pacome de démarre pas=> possibilité cachée)
 // "courrielleur.agenda.timer.auto"
 
-
+var lastRefresh = new Date(Date.now());
 var cmelSynchroAgenda={
 
   // instance timer
@@ -236,14 +236,17 @@ var cmelSynchroAgenda={
       return;
     }
     
-    if (!calendar.getProperty("disabled") &&
-        calendar.canRefresh) {
+    let refreshInterval=calendar.getProperty("refreshInterval");
+    let now = new Date(Date.now());
+    //if(!calendar.getProperty("disabled") && calendar.canRefresh) 
+    if ((now.getTime() - lastRefresh.getTime() > 60000*refreshInterval))
+    {
       this.debugMsg("rafraichissement agenda:"+calendar.name);
       // refresh original
       calendar.refresh();
       
       // temps suivant
-      let refreshInterval=calendar.getProperty("refreshInterval");
+      
       if (null==refreshInterval)
         refreshInterval=30;//idem lightning
 

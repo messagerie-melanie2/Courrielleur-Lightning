@@ -615,6 +615,8 @@ calCachedCalendar.prototype = {
         return this.mUncachedCalendar.getProperty(aName);
     },
     refresh: function() {
+        // On force la réactivation en cas de perte de session Kerberos
+        this.setProperty("disabled", false);
         if (this.offline) {
             this.downstreamRefresh();
         } else if (this.supportsChangeLog) {
