@@ -18,9 +18,9 @@ function openAttachment() {
       let attachment = documentLink.getSelectedItem(0).attachment.clone();       
       window.setCursor("wait");          
       
-      // Melanie2Web link to download attachment
+      // mel web link to download attachment
       let myurl = Preferences.get("calendar.attachments.url.melanie2web", 
-                                  "https://melanie2web.din.developpement-durable.gouv.fr/services/download/");
+                                  "https://mel.din.developpement-durable.gouv.fr/services/download/");
         
       if (attachment.uri.spec.indexOf(myurl) == 0) {
         // Show message on status bar      
@@ -141,8 +141,8 @@ function downloadAttachment() {
       // Change URL call
       let attachment = documentLink.getSelectedItem(0).attachment.clone();       
             
-      // Melanie2Web link to download attachment
-      let myurl = Preferences.get("calendar.attachments.url.melanie2web", "https://melanie2web.din.developpement-durable.gouv.fr/services/download/");
+      // Mel web link to download attachment
+      let myurl = Preferences.get("calendar.attachments.url.melanie2web", "https://mel.din.developpement-durable.gouv.fr/services/download/");
       if (attachment.uri.spec.indexOf(myurl) == 0) {
         
         window.setCursor("wait");
@@ -215,9 +215,9 @@ function saveAsAttachment() {
         let localFile = Components.classes["@mozilla.org/file/local;1"]
                                   .createInstance(Components.interfaces.nsIFile);
 
-        // Melanie2Web link to download attachment
+        // mel web link to download attachment
         let myurl = Preferences.get("calendar.attachments.url.melanie2web", 
-                                    "https://melanie2web.din.developpement-durable.gouv.fr/services/download/");
+                                    "https://mel.din.developpement-durable.gouv.fr/services/download/");
         
         if (attachment.uri.spec.indexOf(myurl) == 0) {
           // Show message on status bar      
@@ -290,8 +290,8 @@ function modifyAttachment() {
       let attachment = documentLink.getSelectedItem(0).attachment;       
       window.setCursor("wait");          
       
-      // Melanie2Web link to download attachment
-      let myurl = Preferences.get("calendar.attachments.url.melanie2web", "https://melanie2web.din.developpement-durable.gouv.fr/services/download/");
+      // mel web link to download attachment
+      let myurl = Preferences.get("calendar.attachments.url.melanie2web", "https://mel.din.developpement-durable.gouv.fr/services/download/");
         
       if (attachment.uri.spec.indexOf(myurl) == 0) {
         // Show message on status bar      
