@@ -237,22 +237,22 @@ var cmelSynchroAgenda={
     }
     
     let refreshInterval=calendar.getProperty("refreshInterval");
-    let now = new Date(Date.now());
-    //if(!calendar.getProperty("disabled") && calendar.canRefresh) 
-    if ((now.getTime() - lastRefresh.getTime() > 60000*refreshInterval))
-    {
+    //let now = new Date(Date.now());
+    //if(!calendar.getProperty("disabled") && calendar.canRefresh){
+      //lastRefresh = now;
       this.debugMsg("rafraichissement agenda:"+calendar.name);
       // refresh original
       calendar.refresh();
       
       // temps suivant
-      
       if (null==refreshInterval)
         refreshInterval=30;//idem lightning
 
-      cm2nextrefresh+=refreshInterval*60;
+      //cm2nextrefresh+=refreshInterval*60;
+      // Force refresh every 1 minutes
+      cm2nextrefresh+=1*60;
       Services.prefs.setIntPref("calendar.registry."+calendar.id+".cm2nextrefresh", cm2nextrefresh);
-    }
+    //}
   },
     
   /* service de mise en veille */
