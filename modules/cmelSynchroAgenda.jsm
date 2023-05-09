@@ -237,6 +237,8 @@ var cmelSynchroAgenda={
     }
     
     let refreshInterval=calendar.getProperty("refreshInterval");
+    // On force la réactivation en cas de perte de session Kerberos
+    calendar.setProperty("disabled", false);
     //let now = new Date(Date.now());
     //if(!calendar.getProperty("disabled") && calendar.canRefresh){
       //lastRefresh = now;
