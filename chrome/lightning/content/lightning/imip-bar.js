@@ -318,6 +318,9 @@ var ltnImipBar = {
      * @returns {Boolean}                     true, if the action succeeded
      */
     executeAction: function(aParticipantStatus, aResponse) {
+
+				let msgAffiche=gMessageDisplay.displayedMessage;
+
         /**
          * Internal function to trigger an scheduling operation
          *
@@ -394,7 +397,7 @@ var ltnImipBar = {
                             cal.showError(label);
                         } else {
                         	// CMel
-                        	MsgSetRdvTraite(gMessageDisplay.displayedMessage);
+													MsgSetRdvTraite(msgAffiche);
                         	// Fin CMel
                         }
                     },
