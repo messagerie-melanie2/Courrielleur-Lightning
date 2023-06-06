@@ -83,7 +83,20 @@ var cal = {
      * Logs a calendar message to the console. Needs calendar.debug.log enabled to show messages.
      * Shortcut to cal.console.log()
      */
-    LOG: gCalendarConsole.log,
+    LOG: function(aLog)
+    {
+        //#7068: Console tronquée lors de logs trop longs            
+        if(aLog.length > 9000)
+        {
+            let logArray = aLog.match(/(.|[\r\n]){1,9000}/g);
+            for(let i = 0; i < logArray.length; i++)
+            {
+                gCalendarConsole.log(logArray[i]);
+            }
+        }
+        else
+            gCalendarConsole.log(aLog);
+    },
 
     /**
      * Logs a calendar warning to the console. Shortcut to cal.console.warn()

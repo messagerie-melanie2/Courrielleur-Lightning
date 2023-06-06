@@ -20,6 +20,9 @@ pref("extensions.{e2fda1a4-762b-4020-b5ad-a41df1933103}.name",
 pref("extensions.{e2fda1a4-762b-4020-b5ad-a41df1933103}.creator",
      "chrome://lightning/locale/lightning.properties");
 
+// #6928: Desactiver le mode de comparaison d'une invitation avec l'évènemet correspondant
+pref("calendar.invitations.highlightChanges", false);
+
 // general settings
 pref("calendar.date.format", 0);
 pref("calendar.event.defaultlength", 60);

@@ -134,7 +134,8 @@ var calattachments = {
               && attachment.encoding
               && "BASE64" == attachment.encoding.toUpperCase()) {
 
-              try {
+              try 
+              {
                 var stringInputStream = Components.classes["@mozilla.org/io/string-input-stream;1"]
                               .createInstance(Components.interfaces.nsIStringInputStream);
                              
@@ -142,18 +143,18 @@ var calattachments = {
 					                    .createInstance(Components.interfaces.nsILocalFile);
                 
             		// Formats the file name to avoid problems with the copy
-			        var fileName = this.makePrettyAttachmentName(attachment.getParameter("X-MOZILLA-CALDAV-ATTACHMENT-NAME"));
+			          var fileName = this.makePrettyAttachmentName(attachment.getParameter("X-MOZILLA-CALDAV-ATTACHMENT-NAME"));
 			        
-			        // Problem with the windows file system when path supperior to 256 characters
-			        if ((fileName.length + directory.path.length) >= 256) {
-				        fileName = "..." + fileName.substring(((fileName.length + directory.path.length) - 253),fileName.length);
-			        }
+                // Problem with the windows file system when path supperior to 256 characters
+                if ((fileName.length + directory.path.length) >= 256) {
+                  fileName = "..." + fileName.substring(((fileName.length + directory.path.length) - 253),fileName.length);
+                }
 
-			        localFile.initWithFile(directory);
-			        localFile.append(fileName);
-			        if( !localFile.exists() ) {
-			          // Read only create file
-			          //localFile.create(Components.interfaces.nsIFile.NORMAL_FILE_TYPE, 0550);
+                localFile.initWithFile(directory);
+                localFile.append(fileName);
+                if( !localFile.exists() ) {
+                  // Read only create file
+                  //localFile.create(Components.interfaces.nsIFile.NORMAL_FILE_TYPE, 0550);
 				          
 				          // Open the file stream
                   // Can also optionally pass a flags parameter here. It defaults to
@@ -180,17 +181,18 @@ var calattachments = {
                     localFile.permissions = 0o555;
                   });
                 }
-              }
-              catch (err) {
-                cal.WARN("Failed to write binary attachment in \"" + directory.path + fileName + "\"");
-              }
-              finally {
+                //#6275: Problème avec les pièces jointes
+                //finally {
                 // Copy the uri of the attachment to open
                 attachment.uri = Services.io.newURI("file://" + localFile.path, null, null);
                 attachment.deleteParameter("ENCODING");
                 attachment.setParameter("VALUE", "BINARY");
                 
                 cal.LOG("Attachment uri: " + attachment.uri.spec);
+                //}
+              }
+              catch (err) {
+                cal.WARN("Failed to write binary attachment in \"" + directory.path + fileName + "\"");
               }
             }
           }
