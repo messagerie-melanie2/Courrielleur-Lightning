@@ -792,6 +792,7 @@
           </menupopup>
         </menu>
         <menuseparator id="appmenu_ltnBeforeUnifinderSection" />
+        <!--6689: Au démarrage du Courrielleur, pour forcer la fermeture du panneau "Recherche d'évènements", supprimer checked="true"-->
         <menuitem id="appmenu_ltnShowUnifinder"
                   type="checkbox"
                   checked="true"

@@ -15,6 +15,8 @@ const TAG_RDVTRAITE = "~rdvtraite";
  * This bar lives inside the message window.
  * Its lifetime is the lifetime of the main thunderbird message window.
  */
+//#6927: Forcer une synchronisation d'agenda avant l'affichage d'une invitation
+var lastRefresh = Date.now();
 var ltnImipBar = {
 
     actionFunc: null,
@@ -197,6 +199,20 @@ var ltnImipBar = {
      *                      in subscribed calendars
      */
     setupOptions: function(itipItem, rc, actionFunc, foundItems) {
+        //#6927: Forcer une synchronisation d'agenda avant l'affichage d'une invitation
+        //(Uniquement si la date de dernier rafraichissement est infèrieur à la date du message et date de plus de 5 secondes)
+        let refreshTreshold = new Date(Date.now());
+        refreshTreshold.setSeconds(refreshTreshold.getSeconds()-5);
+        if(lastRefresh < gMessageDisplay.displayedMessage.date/1000 && lastRefresh < refreshTreshold)
+        {
+          lastRefresh = new Date(Date.now());
+          let calendars = cal.getCalendarManager().getCalendars({});//.filter(cal.itip.isSchedulingCalendar);
+          for (i = 0; i < calendars.length; i++)
+          {
+            calendars[i].refresh();
+          }
+        }
+
         let imipBar = document.getElementById("imip-bar");
         let data = cal.itip.getOptionsText(itipItem, rc, actionFunc, foundItems);
 
@@ -488,8 +504,17 @@ var ltnImipBar = {
                 let delTime = delmgr.getDeletedDate(items[0].id);
                 let dialogText = cal.l10n.getLtnString("confirmProcessInvitation");
                 let dialogTitle = cal.l10n.getLtnString("confirmProcessInvitationTitle");
-                if (delTime && !Services.prompt.confirm(window, dialogTitle, dialogText)) {
-                    return false;
+                // #6272: Le choix d'agenda par défaut n'est pas respecté lors de l'acceptation d'une invitation
+                if(delTime)
+                {
+                  let calendars = cal.getCalendarManager().getCalendars({}).filter(cal.itip.isSchedulingCalendar);
+                  //let matchingCals = calendars.filter(calendar => cal.itip.getInvitedAttendee(ltnImipBar.itipItem.getItemList({})[0], calendar) != null);
+                  if (calendars.length == 1)
+                  {
+                    //if (delTime && !cal.itip.promptCalendar(aResponse, ltnImipBar.itipItem, window))
+                    if (!Services.prompt.confirm(window, dialogTitle, dialogText))
+                        return false;
+                  }
                 }
             }
 
