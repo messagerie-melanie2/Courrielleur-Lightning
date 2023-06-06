@@ -1030,8 +1030,12 @@
                 for (let [id, [calendar, row]] of Object.entries(this.mCycleCalendarFlag)) {
                     if (composite.getCalendarById(id)) {
                         composite.removeCalendar(calendar);
+                        // #6300 Synchronisation lors de la deselection d'un calendrier
+                        cal.view.getCompositeCalendar(window).refresh();
                     } else {
                         composite.addCalendar(calendar);
+                        // #6300 Synchronisation lors de la selection d'un calendrier
+                        cal.view.getCompositeCalendar(window).refresh();
                     }
                     this.treebox.invalidateRow(row);
                 }
