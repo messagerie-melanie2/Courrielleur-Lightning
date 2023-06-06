@@ -10,12 +10,23 @@
 <overlay xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
   <script type="application/javascript" src="chrome://calendar/content/calendar-unifinder.js"/>
   <script type="application/javascript" src="chrome://global/content/globalOverlay.js"/>
+  <script>
+    <!-- #6689: Au démarrage du Courrielleur, forcer le repositionnement en cas de mauvaise pref utilisateur déjà enregistrée-->
+    function resetValue()
+    {
+      var box = document.getElementById("event-filter-menulist");
+      box.selectedIndex = 2;
+    }
+  </script>
 
   <vbox id="calendar-view-box">
+    <!-- #6689: Au démarrage du Courrielleur, forcer la fermeture du panneau "Recherche d'évènements"-->
+    <!-- <vbox style="visibility:collapse;" id="bottom-events-box" insertbefore="calendar-nav-control" persist="height">-->
     <vbox id="bottom-events-box" insertbefore="calendar-nav-control" persist="height">
       <hbox id="unifinder-searchBox" persist="collapsed">
         <box align="center">
-          <menulist id="event-filter-menulist" value="P7D" persist="value">
+          <!-- #6689: Ne plus sauvegarder la pref utilisateur persist="value" -->
+          <menulist id="event-filter-menulist" value="P7D" onload="resetValue()">
             <menupopup id="event-filter-menupopup" oncommand="refreshEventTree()">
               <menuitem id="event-filter-all"
                         label="&calendar.events.filter.all.label;"
