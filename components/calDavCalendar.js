@@ -287,8 +287,9 @@ calDavCalendar.prototype = {
                 }
             }
         };
-        this.mOfflineStorage.getItems(calICalendar.ITEM_FILTER_ALL_ITEMS,
-                                      0, null, null, getMetaListener);
+        // #6428: Optimisation du temps de dĂ©marrage pris par le chargement des caches agendas
+        //this.mOfflineStorage.getItems(calICalendar.ITEM_FILTER_ALL_ITEMS,
+        //                              0, null, null, getMetaListener);
     },
 
     fetchCachedMetaData: function() {

@@ -139,7 +139,7 @@ calItipEmailTransport.prototype = {
                         break;
                     case "TENTATIVE":
                         subjectKey = "itipReplySubjectTentative";
-                        bodyKey = "itipReplyBodyAccept";
+                        bodyKey = "itipReplyBodyTentative";
                         break;
                     case "DECLINED":
                         subjectKey = "itipReplySubjectDecline";
@@ -245,26 +245,56 @@ calItipEmailTransport.prototype = {
                 let toList = "";
                 // CM2V6 - Liste des non participants
                 let toNonParticipantList = "";
-                for (let recipient of aToList) {
-                  // Strip leading "mailto:" if it exists.
-                  let rId = recipient.id.replace(/^mailto:/i, "");
-                  // CM2V6 - Test s'il s'agit d'un non participant
-                  if (recipient.role &&  "NON-PARTICIPANT" == recipient.role) {
-                  // Prevent trailing commas.
-                    if (toNonParticipantList.length > 0) {
-                        toNonParticipantList += ", ";
-                      }
-                      // Add this recipient id to the list.
-                      toNonParticipantList += rId;
-                  } else {
-                    // Prevent trailing commas.
-                    if (toList.length > 0) {
-                      toList += ", ";
+                for (let recipient of aToList) 
+                {
+                    // Strip leading "mailto:" if it exists.
+                    let rId = recipient.id.replace(/^mailto:/i, "");
+                    // CM2V6 - Test s'il s'agit d'un non participant
+                    if (recipient.role &&  "NON-PARTICIPANT" == recipient.role) 
+                    {
+                        // Prevent trailing commas.
+                        if (toNonParticipantList.length > 0) 
+                        {
+                            toNonParticipantList += ", ";
+                        }
+                        // Add this recipient id to the list.
+                        toNonParticipantList += rId;
+                    } 
+                    else
+                    {
+                        // #6372 Diminution du nombre de notifications
+                        // Si l'attendee a accepté ou refusé l'evenement, et qu'il a l'attribut
+                        // X-MEL-EVENT-SAVED, alors il ne doit pas recevoir de notifications.
+                        try
+                        {
+                          //#6706 Envoi de la notification en cas de suppression (sujet "événement annulé")
+                          //#6372 Pas de notification lors de certaines modifications
+                          if(!aSubject.includes("nement annu") && recipient.getProperty("X-MEL-EVENT-SAVED") == 1 && (recipient.participationStatus == "ACCEPTED" || recipient.participationStatus == "DECLINED"))
+                          {
+                            cal.LOG("SUBJECT: "+aSubject);
+                            cal.LOG("sendXpcomMail: No need to notify " + recipient.toString());
+                          } 
+                          else
+                          {
+                            cal.LOG("Ajout de " + recipient.toString() + " à la liste des destinataires.");
+                            cal.LOG("X-MEL-EVENT-SAVED: " + recipient.getProperty("X-MEL-EVENT-SAVED"));
+                            cal.LOG("STATUS: " + recipient.participationStatus);
+                            // Prevent trailing commas.
+                            if (toList.length > 0) 
+                            {
+                              toList += ", ";
+                            }
+                            // Add this recipient id to the list.
+                            toList += rId;
+                          }
+                        }
+                        catch(ex)
+                        {
+                          cal.LOG("Attention: Une erreur est survenue lors de l'analyse des utilisateurs à notifier: " + ex);
+                          cal.LOG("L'execution continue.");
+                        }
                     }
-                    // Add this recipient id to the list.
-                    toList += rId;
-                  }
-                  // Fin CM2V6 - Test s'il s'agit d'un non participant
+                    // Fin CM2V6 - Test s'il s'agit d'un non participant
                 } 
                 // CM2V6 Attachments - 30/08/2011 - Recuperation du mail text pour l'ecriture dans le fichier tmp
                 let mailText = null;
