@@ -215,8 +215,9 @@ function pasteFromClipboard() {
 
             let notify = Ci.calIItipItem.USER;
             let destCal = null;
-            // MANTIS 0005517: Pop-up en cas de copier-coller d'événement
-            let pasteIntoSelectedCalendar = Preferences.get("calendar.paste.intoSelectedCalendar", false);
+            // #5517: Pop-up en cas de copier-coller d'événement
+            // #6565: Un copier/coller d'un évt d'un autre agenda n'affiche pas la fenêtre de chois d'agenda et pour un récurrent le colle au même jou
+            /*let pasteIntoSelectedCalendar = Preferences.get("calendar.paste.intoSelectedCalendar", false);
             if (!pasteIntoSelectedCalendar) {
                 let selectedCal = getSelectedCalendar();
                 let currView = currentView().type;
@@ -230,7 +231,7 @@ function pasteFromClipboard() {
             }
             if (pasteIntoSelectedCalendar) {
                 destCal = getSelectedCalendar();
-            } else {
+            } else {*/
                 let pasteText = "paste";
                 if (withAttendees.length) {
                     if (withAttendees.every(cal.item.isEvent)) {
@@ -279,11 +280,11 @@ function pasteFromClipboard() {
                     }
 
                     window.openDialog("chrome://calendar/content/chooseCalendarDialog.xul",
-                                      "_blank", "chrome,titlebar,modal,resizable", args);
+                                      "_blank", "chrome,titlebar,modal,resizable,centerscreen,width=400,height=300", args);
                 } else if (calendars.length == 1) {
                     destCal = calendars[0];
                 }
-            }
+            //}
             if (!destCal) {
                 return;
             }
