@@ -3133,7 +3133,15 @@ function endEventStatus (aIsError) {
  * @param aIsClosing            If true, the save action originates from the
  *                                save prompt just before the window is closing.
  */
+ var gItemNew=false;// true si transaction add initiée
 function onCommandSave(aIsClosing, rappel) {
+	
+	// éviter double création
+	let originalItem = window.calendarItem;
+	if (originalItem.id==null && gItemNew) {
+		return;
+   }
+   gItemNew=true;
 
   // CM2V6 - Save status bar
   saveEventStatus();
@@ -3203,6 +3211,8 @@ function onCommandSave(aIsClosing, rappel) {
     let listener = {
         QueryInterface: XPCOMUtils.generateQI([Components.interfaces.calIOperationListener]),
         onOperationComplete: function(aCalendar, aStatus, aOpType, aId, aItem) {
+
+			gItemNew=false;
             // Check if the current window has a calendarItem first, because in case of undo
             // window refers to the main window and we would get a 'calendarItem is undefined' warning.
             if (!aIsClosing && "calendarItem" in window) {
