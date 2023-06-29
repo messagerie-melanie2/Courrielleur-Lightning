@@ -296,6 +296,10 @@ calDavCalendar.prototype = {
         cal.LOG("CalDAV: Retrieving server info from cache for " + this.name);
         let cacheIds = {};
         let cacheValues = {};
+
+        // #22 this.mOfflineStorage est null, Exception à la sortie de l'assistant Pacome en mise-à-jour
+        this.ensureTargetCalendar();
+
         this.mOfflineStorage.getAllMetaData({}, cacheIds, cacheValues);
         cacheIds = cacheIds.value;
         cacheValues = cacheValues.value;
