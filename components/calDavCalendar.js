@@ -294,7 +294,7 @@ calDavCalendar.prototype = {
 
     fetchCachedMetaData: function() {
 
-        // #22 - Exception à la sortie de l'assistant Pacome en mise-à-jour
+        // #42 - Erreur lors de l'ajout de l'agenda
         if(!this.mOfflineStorage)
         {
             cal.LOG("in fetchCachedMetaData - no mOfflineStorage for " + this.name);
