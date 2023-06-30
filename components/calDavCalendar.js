@@ -266,7 +266,7 @@ calDavCalendar.prototype = {
                 for (let item of aItems) {
                     if (!(item.id in self.mItemInfoCache)) {
                         let path = self.getItemLocationPath(item);
-                        cal.LOG("Adding meta-data for cached item " + item.id);
+                        cal.LOG("in ensureMetaData - Adding meta-data for cached item " + item.id);
                         self.mItemInfoCache[item.id] = {
                             etag: null,
                             isNew: false,
@@ -293,12 +293,18 @@ calDavCalendar.prototype = {
     },
 
     fetchCachedMetaData: function() {
-        cal.LOG("CalDAV: Retrieving server info from cache for " + this.name);
+
+        // #22 - Exception à la sortie de l'assistant Pacome en mise-à-jour
+        if(!this.mOfflineStorage)
+        {
+            cal.LOG("in fetchCachedMetaData - no mOfflineStorage for " + this.name);
+            this.ensureMetaData();
+            return;
+        }
+
+        cal.LOG("in fetchCachedMetaData - Retrieving server info from cache for " + this.name);
         let cacheIds = {};
         let cacheValues = {};
-
-        // #22 this.mOfflineStorage est null, Exception à la sortie de l'assistant Pacome en mise-à-jour
-        this.ensureTargetCalendar();
 
         this.mOfflineStorage.getAllMetaData({}, cacheIds, cacheValues);
         cacheIds = cacheIds.value;
@@ -787,7 +793,7 @@ calDavCalendar.prototype = {
 
         // CM2V6 - Bugzilla 168680 -  Treatment of attachment of the event
         var this_ = this;
-        
+
         cal.attachments.readAttachmentsFiles(aNewItem, function () {
           let eventUri = this_.makeUri(this_.mItemInfoCache[aNewItem.id].locationPath);
 
@@ -957,7 +963,7 @@ calDavCalendar.prototype = {
                         if (Preferences.get("calendar.attachments.active", true)) {
                             // Delete the attachments directory
                             cal.attachments.deleteAttachmentsDirectory(aItem, self.isCached);
-                      
+
                             // Delete the temporaly attachments directory
                             if (self.isCached) cal.attachments.deleteAttachmentsDirectory(aItem, !self.isCached);
                         }
@@ -1138,7 +1144,7 @@ calDavCalendar.prototype = {
 
         this.mHrefIndex[path] = item.id;
         this.mItemInfoCache[item.id].etag = etag;
-        
+
         // CM2V6 - Bugzilla 168680 -  Treatment of attachment of the event
         if (Preferences.get("calendar.attachments.active", true)) {
             cal.attachments.writeAttachmentsFiles(item, this.isCached, null, this.mOfflineStorage);
@@ -1207,9 +1213,9 @@ calDavCalendar.prototype = {
             }
             // CM2V6 - Bugzilla 168680 - Remove attachments related to the event
             if (Preferences.get("calendar.attachments.active", true)) {
-                // Delete the attachments directory 
+                // Delete the attachments directory
                 cal.attachments.deleteAttachmentsDirectory(foundItem, this.isCached);
-                  
+
                 // Delete the temporaly attachments directory
                 if (this.isCached) cal.attachments.deleteAttachmentsDirectory(foundItem, !this.isCached);
             }
