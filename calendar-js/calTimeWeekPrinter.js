@@ -428,6 +428,24 @@ calTimeWeekPrinter.prototype = {
       div.appendChild(img);
     }
 
+    function hexToRgb(hex) {
+      var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+      return result ? {
+        r: parseInt(result[1], 16),
+        g: parseInt(result[2], 16),
+        b: parseInt(result[3], 16)
+      } : null;
+    }
+
+    let rgbaString = hexToRgb(calColor).r+","+hexToRgb(calColor).g+","+hexToRgb(calColor).b;
+
+    let style = "";
+    // annulé
+    if (item.hasProperty("STATUS") && "CANCELLED"==item.getProperty("STATUS")) 
+    {
+      style="text-decoration-line: line-through;background-color:rgba("+rgbaString+",1);";
+    }
+
     // participants
     let parts=item.getAttendees({});
     if (parts && 0!=parts.length) {
@@ -462,6 +480,7 @@ calTimeWeekPrinter.prototype = {
 
       let cl=div.getAttribute("class");
       div.setAttribute("class", cl+" itemEntier");
+	  div.setAttribute("style", style);
 
     } else{
 
@@ -478,7 +497,7 @@ calTimeWeekPrinter.prototype = {
         end=this.getLigne(itemEndDate.hour, itemEndDate.minute);
       }
       
-      let style="grid-row-start:"+start+";grid-row-end:"+end+";";    
+      style+="grid-row-start:"+start+";grid-row-end:"+end+";";  
       div.setAttribute("style", style);
     }
 
