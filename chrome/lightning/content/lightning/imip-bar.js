@@ -129,6 +129,7 @@ var ltnImipBar = {
      * Resets all buttons and its menuitems, all buttons are hidden thereafter
      */
     resetButtons: function() {
+        lastReset = Date.now();
         let buttons = ltnImipBar.getButtons();
         buttons.forEach(hideElement);
         buttons.forEach(aButton => ltnImipBar.getMenuItems(aButton).forEach(showElement));
@@ -259,7 +260,9 @@ var ltnImipBar = {
                 };
             }
         }
-
+        // #7437 Parfois, pas besoin de tout rafraichir.
+        if(data)
+        {
         imipBar.setAttribute("label", data.label);
         // let's reset all buttons first
         ltnImipBar.resetButtons();
@@ -275,6 +278,7 @@ var ltnImipBar = {
         // adjust button style if necessary
         ltnImipBar.conformButtonType();
         ltnImipBar.displayModifications();
+        }
     },
 
     /**
@@ -318,9 +322,6 @@ var ltnImipBar = {
      * @returns {Boolean}                     true, if the action succeeded
      */
     executeAction: function(aParticipantStatus, aResponse) {
-
-				let msgAffiche=gMessageDisplay.displayedMessage;
-
         /**
          * Internal function to trigger an scheduling operation
          *
@@ -334,6 +335,7 @@ var ltnImipBar = {
          * @returns {Boolean}                    true, if the action succeeded
          */
         function _execAction(aActionFunc, aItipItem, aWindow, aPartStat, aExtResponse) {
+            cal.LOG("in _execAction - User pressed the button.");
             if (cal.itip.promptCalendar(aActionFunc.method, aItipItem, aWindow)) {
                 let isDeclineCounter = aPartStat == "X-DECLINECOUNTER";
                 // filter out fake partstats
@@ -341,9 +343,10 @@ var ltnImipBar = {
                     aParticipantStatus = "";
                 }
                 // hide the buttons now, to disable pressing them twice...
-                if (aPartStat == aParticipantStatus) {
+                //#7437 Reset les bouttons dans tous les cas
+                //if (aPartStat == aParticipantStatus) {
                     ltnImipBar.resetButtons();
-                }
+                //}
 
                 let opListener = {
                     QueryInterface: XPCOMUtils.generateQI([Components.interfaces.calIOperationListener]),
@@ -397,17 +400,19 @@ var ltnImipBar = {
                             cal.showError(label);
                         } else {
                         	// CMel
-													MsgSetRdvTraite(msgAffiche);
+                        	MsgSetRdvTraite(gMessageDisplay.displayedMessage);
                         	// Fin CMel
                         }
                     },
                     onGetResult: function(aCalendar, aStatus, aItemType, aDetail, aCount, aItems) {
+                        cal.LOG("in onGetResult - aCalendar.name: "+aCalendar.name);
                     }
                 };
 
                 try {
                     // CMel
                     // Bugzilla 168680 - Add email attachments
+                    cal.LOG("in _execAction - Starting aActionFunc");
                     aActionFunc(opListener, aParticipantStatus, aExtResponse, currentAttachments);
                     // CMel
                 } catch (exc) {
@@ -504,6 +509,7 @@ var ltnImipBar = {
                 let delTime = delmgr.getDeletedDate(items[0].id);
                 let dialogText = cal.l10n.getLtnString("confirmProcessInvitation");
                 let dialogTitle = cal.l10n.getLtnString("confirmProcessInvitationTitle");
+
                 // #6272: Le choix d'agenda par défaut n'est pas respecté lors de l'acceptation d'une invitation
                 if(delTime)
                 {

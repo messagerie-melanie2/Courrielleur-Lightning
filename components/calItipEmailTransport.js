@@ -245,8 +245,7 @@ calItipEmailTransport.prototype = {
                 let toList = "";
                 // CM2V6 - Liste des non participants
                 let toNonParticipantList = "";
-                for (let recipient of aToList) 
-                {
+                for (let recipient of aToList) {
                     // Strip leading "mailto:" if it exists.
                     let rId = recipient.id.replace(/^mailto:/i, "");
                     // CM2V6 - Test s'il s'agit d'un non participant
@@ -293,6 +292,7 @@ calItipEmailTransport.prototype = {
                           cal.LOG("Attention: Une erreur est survenue lors de l'analyse des utilisateurs à notifier: " + ex);
                           cal.LOG("L'execution continue.");
                         }
+                    
                     }
                     // Fin CM2V6 - Test s'il s'agit d'un non participant
                 } 

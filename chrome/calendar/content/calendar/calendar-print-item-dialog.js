@@ -125,6 +125,7 @@ function refreshHtml(finishFunc) {
                    printContent = printContent.replace("<pre class=\"description\" style=\"grid-row-start:5;\">", "<pre class=\"description\" style=\"grid-row-start:5;height:500px;\">");
                }
                while(cont);
+              
               /*let portion = {};
                 while (convStream.readString(1, portion)) {
                     printContent += portion.value;
@@ -135,7 +136,6 @@ function refreshHtml(finishFunc) {
         } catch (e) {
             Components.utils.reportError("Calendar print dialog:refreshHtml: " + e);
         }
-
         printContent = "data:text/html," + encodeURIComponent(printContent);
         document.getElementById("content").src = printContent;
 

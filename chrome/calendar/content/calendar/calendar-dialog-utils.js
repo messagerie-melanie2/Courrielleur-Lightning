@@ -155,7 +155,7 @@ function editReminder() {
 
     window.setCursor("wait");
 
-    // CM2V6 - calendrier melanie2web
+    // CM2V6 - calendrier melweb
     if (args.calendar.getProperty("pacome")) {
         openDialog(	"chrome://calendar/content/cm2calendar-event-dialog-reminder.xul",
                                 "_blank",

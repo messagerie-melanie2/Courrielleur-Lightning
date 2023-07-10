@@ -12,6 +12,9 @@ ChromeUtils.import("resource://gre/modules/Preferences.jsm");
 // Getting the service here will load if its not already loaded
 Components.classes["@mozilla.org/calendar/backend-loader;1"].getService();
 
+//#7437: Temps depuis la dernière réinitialisation des boutons
+var lastReset = Date.now();
+
 // The calendar console instance
 var gCalendarConsole = new ConsoleAPI({
     prefix: "Lightning",
