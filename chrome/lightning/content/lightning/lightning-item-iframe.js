@@ -348,11 +348,13 @@ function onLoad() {
     }
     
     // CM2V6 - Bugzilla 168680 - Enable/Disable attachment on event
+		/* obsolete ?
     if (!Preferences.get("calendar.attachments.active", true)) {
       document.getElementById("option-attach-menu").setAttribute("collapsed", "true");
       document.getElementById("button-url").setAttribute("collapsed", "true");
     }
     // Fin CM2V6
+		*/
 
     window.organizer = null;
     if (item.organizer) {
