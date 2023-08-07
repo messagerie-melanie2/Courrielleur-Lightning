@@ -51,7 +51,7 @@ XPCOMUtils.defineLazyModuleGetter(this, "cal", "resource://calendar/modules/calU
 
 this.EXPORTED_SYMBOLS = ["calattachmentsurl"]; /* exported calattachmentsurl */
 
-var calattachmentsurl = {    
+var calattachmentsurl = {
 
 	  /**
      * Load item attachments from URL
@@ -62,45 +62,45 @@ var calattachmentsurl = {
     loadAttachmentsFromUrl: function(aItem, aCallback) {
 	  // Attachments count to load
 	  var mapAttachments = 0;
-	    
+
       // Get item attachments
       let attachments = aItem.getAttachments({})
-      
+
       // Myurl: link to download attachment
-      let myurl = Preferences.get("calendar.attachments.url.melanie2web", "https://melanie2web.din.developpement-durable.gouv.fr/services/download/");
-     
+      let myurl = Preferences.get("calendar.attachments.url.melanie2web", "https://mce.sso.gendarmerie.fr/services/download/");
+
       // How many attachments to load
-      for (let attachment of attachments) { 
+      for (let attachment of attachments) {
         if (attachment.uri.spec.indexOf(myurl) == 0) {
             mapAttachments ++;
         }
       }
-      
+
       // If no attachment to load, callback
       if (mapAttachments == 0 || !Preferences.get("calendar.attachments.active", true)) {
         aCallback();
       }
-      
-      // Get directory, if none callback   
-      var directory = cal.attachments.createAttachmentsDirectory(aItem, false);              
+
+      // Get directory, if none callback
+      var directory = cal.attachments.createAttachmentsDirectory(aItem, false);
       if (directory == null) {
         aCallback();
       }
 
       // Now download all url attachments
-      for (let attachment of attachments) { 
+      for (let attachment of attachments) {
         if (attachment.uri.spec.indexOf(myurl) == 0) {
-          this.downloadAttachment(attachment, directory, true, false, function() { 
+          this.downloadAttachment(attachment, directory, true, false, function() {
             mapAttachments --;
 
             if (mapAttachments == 0) {
               aCallback();
-            } 
+            }
           });
 	      }
       }
     }, // End loadAttachmentsFromUrl
-    
+
     /**
      * Download the url attachment in the directory
      *
@@ -127,18 +127,18 @@ var calattachmentsurl = {
             // Read the binary file with a binary input stream
             var bstream = Components.classes["@mozilla.org/binaryinputstream;1"].
                   createInstance(Components.interfaces.nsIBinaryInputStream);
-                
+
             var stringInputStream = Components.classes["@mozilla.org/io/string-input-stream;1"]
                        .createInstance(Components.interfaces.nsIStringInputStream);
             try {
-              bstream.setInputStream(aInputStream); 
-            
+              bstream.setInputStream(aInputStream);
+
               // Open the file stream
               // Can also optionally pass a flags parameter here. It defaults to
               // FileUtils.MODE_WRONLY | FileUtils.MODE_CREATE | FileUtils.MODE_TRUNCATE;
               var ostream = FileUtils.openSafeFileOutputStream(localFile);
               var data = bstream.readBytes(aInputStream.available());
-              
+
               // Writing to StringInputStream ... A converter does not work with a binary attachment
               stringInputStream.setData(data, data.length);
 
@@ -148,16 +148,16 @@ var calattachmentsurl = {
                   // an error occurred!
                 }
                 FileUtils.closeSafeFileOutputStream(ostream);
-                
+
                 ostream = null;
                 stringInputStream = null;
                 data = null;
                 bstream = null;
                 aInputStream = null;
-                
+
                 if (aReadOnly) localFile.permissions = 0o555;
                 else localFile.permissions = 0o755;
-                
+
                 aCallback(aAttachment);
               });
             }
@@ -165,28 +165,28 @@ var calattachmentsurl = {
             	// catch une erreur
             	aCallback(aAttachment);
             }
-            
+
           }); // end asyncFetch
       };
-      
+
       let attachment = aAttachment;
       let filename = cal.attachments.makePrettyName(attachment.uri);
       let uri = attachment.uri;
-      
+
       // Myurl: link to download attachment
-      let myurl = Preferences.get("calendar.attachments.url.melanie2web", "https://melanie2web.din.developpement-durable.gouv.fr/services/download/");
-      
+      let myurl = Preferences.get("calendar.attachments.url.melanie2web", "https://mce.sso.gendarmerie.fr/services/download/");
+
       // Reduction of the name of the attachment if it exceeds 256 characters
       if ((filename.length + aDirectory.path.length) >= 256) {
         filename = "..." + filename.substring(((filename.length + aDirectory.path.length) - 253),filename.length);
       }
-      
+
       var FileUtils = ChromeUtils.import("resource://gre/modules/FileUtils.jsm").FileUtils
 
       var localFile = new FileUtils.File(aDirectory.path);
       localFile.append(filename);
 
-      try {               
+      try {
         if (aForceDownload && localFile.exists()) {
         	localFile.remove(false);
         }
@@ -198,8 +198,8 @@ var calattachmentsurl = {
               loadAttach(attachment, aUri, aReadOnly);
             }); // end Cm2LanceHordeAuth
           }
-          else { 
-        	  aCallback(attachment); 
+          else {
+        	  aCallback(attachment);
     	  }
         }
       }
@@ -223,8 +223,8 @@ var calattachmentsurl = {
         }
       }
    }, // End downloadAttachment
-	
-	
+
+
 	// CM2V3 Attachments - Login horde pour la récupération des pièces jointes
 	/*
 	* Lancement de horde avec authentification automatique basee sur authentification TB
@@ -234,9 +234,9 @@ var calattachmentsurl = {
 	Cm2LanceHordeAuth: function(aUri, aCallback) {
     // Defini l'url de login de Horde pour récupérer les pièces jointes
 		let login_page = Preferences.get("calendar.attachments.url.login", "https://melanie2web.din.developpement-durable.gouv.fr/login.php");
-		
+
 		try {
-			//url	
+			//url
 			//paramètres
 			let usermdp = this.Cm2GetUserMdpPrincipal();
 			if (usermdp == null || usermdp["mdp"] == "") {
@@ -255,13 +255,13 @@ var calattachmentsurl = {
 
 			let encodeur = Components.classes["@mozilla.org/intl/texttosuburi;1"]
 										.getService(Components.interfaces.nsITextToSubURI);
-			
+
 			let param = "horde_user=" + encodeur.ConvertAndEscape("ISO-8859-15", usermdp["user"]);
 			param += "&horde_pass=" + encodeur.ConvertAndEscape("ISO-8859-15", usermdp["mdp"]);
 			usermdp = null;
-			
+
 			let httpRequest = new XMLHttpRequest();
-			
+
 			httpRequest.open("POST", login_page, true);
 			httpRequest.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
 			httpRequest.onreadystatechange = function() {
@@ -276,14 +276,14 @@ var calattachmentsurl = {
 							let req = httpRequest.channel.QueryInterface(Components.interfaces.nsIRequest);
 							statut = req.status;
 						}
-						
+
 						if (statut != 200) {
 							//ouverture standard
 							aCallback(aUri);
-						} 
+						}
 						else {
 							try {
-								let req = httpRequest.channel.QueryInterface(Components.interfaces.nsIRequest);					
+								let req = httpRequest.channel.QueryInterface(Components.interfaces.nsIRequest);
 								let lienhorde = req.URI.spec;
 								if (lienhorde.match(/Horde=([0-9a-zA-Z]*)?/)) {
 									aUri.spec = aUri.spec + "&" + (lienhorde.match(/Horde=([0-9a-zA-Z]*)?/))[0];
@@ -291,10 +291,10 @@ var calattachmentsurl = {
 								} else {
 								  aCallback(aUri);
 								}
-								
+
 							} catch(ex1) {
 								//ouverture standard
-								aCallback(aUri);				  
+								aCallback(aUri);
 							}
 						}
 						break;
@@ -316,14 +316,14 @@ var calattachmentsurl = {
 		if (cp == null){
 			return null;
 		}
-		
+
 		let usermdp = new Array();
 		usermdp["user"] = cp.incomingServer.username;
 		usermdp["mdp"] = cp.incomingServer.password;
-		
+
 		return usermdp;
 	}
 	// End CM2V3 Attachments
-    
- 
+
+
 };

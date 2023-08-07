@@ -346,7 +346,7 @@ function onLoad() {
             window.attendees.push(attendee.clone());
         }
     }
-    
+
     // CM2V6 - Bugzilla 168680 - Enable/Disable attachment on event
     if (!Preferences.get("calendar.attachments.active", true)) {
       document.getElementById("option-attach-menu").setAttribute("collapsed", "true");
@@ -442,7 +442,7 @@ function onEventDialogUnload() {
 function onAccept() {
 
   function rappel(){
-    
+
     dispose();
 
     if (!gWarning) {
@@ -453,7 +453,7 @@ function onAccept() {
   }
 
   onCommandSave(true, rappel);
-  
+
   return false;
 }
 
@@ -2062,10 +2062,10 @@ function attachFile() {
                 // If the attachment hasn't been added, then set the last display
                 // directory.
                 lastDirectory(uriSpec);
-                
-                // Show message on status bar      
+
+                // Show message on status bar
             		gEventStatusFeedback.initialize(window.parent);
-            		
+
             		// ... and add the attachment.
             		let size = file.fileSize;
             		if (size < 5000000) {
@@ -2074,7 +2074,7 @@ function attachFile() {
               		attachment.rawData = uriSpec;
               		attachment.setParameter("SIZE",size);
 
-              
+
               		// TODO: set the formattype, but this isn't urgent as we don't have
               		// a type sensitive dialog to start files.
               		// => Done in calAttachmentsUtils.jsm
@@ -2220,7 +2220,7 @@ function addAttachment(attachment) {
         attachment.hashId in gAttachMap) {
         return;
     }
-    
+
     function roundNumber(num, dec) {
 	    let result = Math.round(num*Math.pow(10,dec))/Math.pow(10,dec);
 	    return result;
@@ -2245,16 +2245,16 @@ function addAttachment(attachment) {
           cellItem.setAttribute("image", "moz-icon://" + attachment.uri);
         } else {
           // Change icons view
-          let myurl = Preferences.get("calendar.attachments.url.melanie2web", "https://melanie2web.din.developpement-durable.gouv.fr/services/download/");
+          let myurl = Preferences.get("calendar.attachments.url.melanie2web", "https://mce.sso.gendarmerie.fr/services/download/");
           if (attachment.uri.spec.indexOf(myurl) == 0) {
             cellItem.setAttribute("image", "moz-icon://." + cal.attachments.makePrettyName(attachment.uri).split('.').pop() + "?size=16");
           } else {
             cellItem.setAttribute("image", "moz-icon://dummy.html");
           }
         }
-        
+
         listItem.appendChild(cellItem);
-        
+
         // Attachment Size
         let cellSize = document.createElement('listcell');
         let size = attachment.getParameter("SIZE");
@@ -2268,7 +2268,7 @@ function addAttachment(attachment) {
           }
         }
         cellSize.setAttribute("label", size);
-        
+
         listItem.appendChild(cellSize);
 
         // Now that everything is set up, add it to the attachment box.
@@ -3048,22 +3048,22 @@ function saveItem() {
     return item;
 }
 
-// CM2V6 
+// CM2V6
 // Viewing the backup of the event in the status bar
 function saveEventStatus () {
-  
+
   gEventStatusFeedback.initialize(window.parent);
   gEventStatusFeedback.showStatusString(cal.l10n.getCalString("savingCurrentEvent"));
-  
+
   window.setCursor("wait");
-  
+
   let btnSave = document.getElementById("button-save");
   let saveAndCloseKey = document.getElementById("saveandclose-key");
   let saveAndCloseKey2 = document.getElementById("saveandclose-key2");
   let saveKey = document.getElementById("save-key");
   let itemSaveAndClose = document.getElementById("item-saveandclose-menuitem");
   let itemSave = document.getElementById("item-save-menuitem");
-  
+
   if (btnSave) {
 	  btnSave.disabled = true;
   }
@@ -3085,22 +3085,22 @@ function saveEventStatus () {
 }
 
 // End of the display of the backup of the event in the status bar
-function endEventStatus (aIsError) { 
+function endEventStatus (aIsError) {
   window.setCursor("auto");
-  
+
   if (aIsError) {
     gEventStatusFeedback.showStatusString(cal.l10n.getCalString("errorSavingCurrentEvent"));
   } else {
     gEventStatusFeedback.showStatusString("");
   }
-  
+
   let btnSave = document.getElementById("button-save");
   let saveAndCloseKey = document.getElementById("saveandclose-key");
   let saveAndCloseKey2 = document.getElementById("saveandclose-key2");
   let saveKey = document.getElementById("save-key");
   let itemSaveAndClose = document.getElementById("item-saveandclose-menuitem");
   let itemSave = document.getElementById("item-save-menuitem");
-  
+
   if (btnSave) {
 	  btnSave.disabled = false;
   }
@@ -3135,7 +3135,7 @@ function endEventStatus (aIsError) {
  */
  var gItemNew=false;// true si transaction add initiée
 function onCommandSave(aIsClosing, rappel) {
-	
+
 	// éviter double création
 	let originalItem = window.calendarItem;
 	if (originalItem.id==null && gItemNew) {
@@ -3145,10 +3145,10 @@ function onCommandSave(aIsClosing, rappel) {
 
   // CM2V6 - Save status bar
   saveEventStatus();
-  
+
   try {
     // Fin CM2V6
-    
+
     // The datepickers need to remove the focus in order to trigger the
     // validation of the values just edited, with the keyboard, but not yet
     // confirmed (i.e. not followed by a click, a tab or enter keys pressure).
@@ -3166,10 +3166,10 @@ function onCommandSave(aIsClosing, rappel) {
     let originalItem = window.calendarItem;
     let item = saveItem();
     let calendar = getCurrentCalendar();
-    
+
     // Action CMel
     if (item.calendar.getProperty("pacome")){
-      
+
       if (window.mode == "new") {
         // creation
         if (item.calendar.getProperty("pacome")) item.setProperty("X-CM2V3-ACTION","CREATE");
@@ -3193,7 +3193,7 @@ function onCommandSave(aIsClosing, rappel) {
       }
     }
     // Fin Cmel
-    
+
     adaptScheduleAgent(item);
 
     item.makeImmutable();
@@ -3238,7 +3238,7 @@ function onCommandSave(aIsClosing, rappel) {
                     updateTitle();
                     eventDialogCalendarObserver.observe(window.calendarItem.calendar);
                     updateAttachment();
-                    
+
                     endEventStatus (false);
                     if (aIsClosing) {
                     	if (!gWarning) {
@@ -3255,7 +3255,7 @@ function onCommandSave(aIsClosing, rappel) {
             if (window.counterProposal && window.counterProposal.onReschedule) {
                 window.counterProposal.onReschedule();
             }
-            
+
           if (rappel)
             rappel();
         },
@@ -3272,11 +3272,11 @@ function onCommandSave(aIsClosing, rappel) {
     endEventStatus (true);
     window.calendarItem = window.calendarItem;
     cal.LOG("[calendar-event-dialog] onCommandSave: Exception: " + ex);
-    
+
     if (rappel)
       rappel();
   }
-  
+
   // Update privacy items to make sure the toolbarbutton's menupopup is set
   // correctly
   //updatePrivacy();

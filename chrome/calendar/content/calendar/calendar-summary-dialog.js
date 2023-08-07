@@ -79,7 +79,7 @@ function onLoad() {
 
     // CM2V7 - MANTIS 0004782: Modification du titre d'une réunion
     //document.getElementById("item-title").value = item.title;
-    setElementValue("item-title", item.title);    
+    setElementValue("item-title", item.title);
     document.getElementById("item-title").focus();
     if (calendar.readOnly) document.getElementById("item-title").setAttribute("disabled", true);
 
@@ -101,7 +101,7 @@ function onLoad() {
     updateRepeatDetails();
     updateAttendees();
     updateLink();
-	
+
 	// CM2V6 - Attachments URL - Gestion des pieces jointes dans la fenetre reduite
     let hasAttachments = capSupported("attachments");
     let attachments = item.getAttachments({});
@@ -181,7 +181,7 @@ function onLoad() {
           var itemstatus=document.getElementById("item-status");
           itemstatus.value=status;
         }
-      }      
+      }
     } else {
         if (status && status.length) {
             let statusRow = document.getElementById("status-row");
@@ -206,14 +206,14 @@ function onLoad() {
     var privacy = item.getProperty("CLASS");
     if (cal.item.isEvent(item)) {
       var privacyRow=document.getElementById("privacy-row-event");
-      privacyRow.removeAttribute("hidden");      
+      privacyRow.removeAttribute("hidden");
       if (privacy && privacy.length) {
         if ("PRIVATE"==privacy || "PUBLIC"==privacy) {
           var itemprivacy=document.getElementById("item-privacy");
           itemprivacy.value=privacy;
           if (calendar.readOnly) itemprivacy.setAttribute("disabled", true);
         }
-      }      
+      }
     }
     // Fin CM2V6
 
@@ -228,8 +228,8 @@ function onLoad() {
         }
     }
 
-    document.title = item.title; 
-    
+    document.title = item.title;
+
     // If this item is read only we remove the 'cancel' button as users
     // can't modify anything, thus we go ahead with an 'ok' button only.
     if (window.readOnly) {
@@ -265,7 +265,7 @@ function onAccept() {
     let oldItem = args.calendarEvent;
     let newItem = window.calendarItem;
     let calendar = newItem.calendar;
-    
+
     // CMel - MANTIS 0004782: Modification du titre d'une réunion
     cal.item.setItemProperty(newItem, "title", getElementValue("item-title"));
     if (cal.item.isEvent(newItem)) {
@@ -274,13 +274,13 @@ function onAccept() {
         // CM2V6 - MANTIS 1904: Ajouter la possibilité de modifier la confidentialité d'un évènement auquel on est invité.
         let itemprivacy = document.getElementById("item-privacy");
         newItem.setProperty("CLASS", itemprivacy.value);
-        
+
         setCategory(newItem, "item-categories");
         // participation modifiee
         if (newItem.calendar.getProperty("pacome")) {
           let oldCal = oldItem.calendar;
           let newCal = newItem.calendar;
-          if (oldCal.getInvitedAttendee 
+          if (oldCal.getInvitedAttendee
         		  && newCal.getInvitedAttendee) {
 	          let attOld = oldCal.getInvitedAttendee(oldItem);
 	          let attNew = newCal.getInvitedAttendee(newItem);
@@ -295,7 +295,7 @@ function onAccept() {
        }
     }
     // Fin CMel
-    
+
     saveReminder(newItem);
     adaptScheduleAgent(newItem);
     args.onOk(newItem, calendar, oldItem, null, respMode);
@@ -510,12 +510,12 @@ function sendMailToOrganizer() {
  */
 function addAttachment(aAttachment) {
     var attachment = aAttachment.clone();
-    
+
     if (!attachment ||
         !attachment.hashId) {
         return;
     }
-    
+
     function roundNumber(num, dec) {
 	    let result = Math.round(num*Math.pow(10,dec))/Math.pow(10,dec);
 	    return result;
@@ -523,7 +523,7 @@ function addAttachment(aAttachment) {
 
     // We currently only support uri attachments
     if (attachment.uri) {
-        
+
         let item = document.createElement('listitem');
         let cellItem = document.createElement('listcell');
 
@@ -532,12 +532,12 @@ function addAttachment(aAttachment) {
         cellItem.setAttribute("label", cal.attachments.makePrettyName(attachment.uri));
         cellItem.setAttribute("crop", "end");
         cellItem.setAttribute("class", "listitem-iconic");
-        let myurl = Preferences.get("calendar.attachments.url.melanie2web", "https://melanie2web.din.developpement-durable.gouv.fr/services/download/");
+        let myurl = Preferences.get("calendar.attachments.url.melanie2web", "https://mce.sso.gendarmerie.fr/services/download");
         if (attachment.uri.schemeIs("file")) {
             // Change icons view
             //item.setAttribute("image", "moz-icon://" + attachment.uri);
             cellItem.setAttribute("image", "moz-icon://." + attachment.uri.spec.split('.').pop() + "?size=16");
-        } else if (attachment.uri.spec.indexOf(myurl) == 0) { 
+        } else if (attachment.uri.spec.indexOf(myurl) == 0) {
 		        // Change icons view
             cellItem.setAttribute("image", "moz-icon://." + cal.attachments.makePrettyName(attachment.uri).split('.').pop() + "?size=16");
 		    } else {
@@ -546,9 +546,9 @@ function addAttachment(aAttachment) {
 
         // full attachment object is stored here
         item.attachment = attachment;
-        
+
         item.appendChild(cellItem);
-        
+
         // Attachment Size
         let cellSize = document.createElement('listcell');
         let size = attachment.getParameter("SIZE");
@@ -561,12 +561,12 @@ function addAttachment(aAttachment) {
            else size = roundNumber(size/1024,1) + " Ko";
           }
         }
-          
+
 
         cellSize.setAttribute("label", size);
-        
+
         item.appendChild(cellSize);
-        
+
         let documentLink = document.getElementById("attachment-link");
         documentLink.appendChild(item);
 
@@ -607,7 +607,7 @@ function attachmentLinkClicked(event) {
 
     if (event.originalTarget.localName == "listitem" && event.detail == 2) {
         openAttachment();
-    }   
+    }
 }
 
 

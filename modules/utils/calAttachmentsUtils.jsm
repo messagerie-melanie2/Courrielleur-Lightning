@@ -51,7 +51,7 @@ XPCOMUtils.defineLazyModuleGetter(this, "cal", "resource://calendar/modules/calU
 
 this.EXPORTED_SYMBOLS = ["calattachments"]; /* exported calattachments */
 
-var calattachments = {    
+var calattachments = {
     /**
      * Copy the binary attachment into a file.
      * call in CalDAVCalendar.
@@ -60,9 +60,9 @@ var calattachments = {
      * @param bool aIsCached
      */
     writeAttachmentsFiles: function(aItem, aIsCached, aCalendar, aTargetCalendar) {
-      // Delete the attachments directory 
+      // Delete the attachments directory
       this.deleteAttachmentsDirectory(aItem, aIsCached, aCalendar);
-      
+
       // Delete the temporaly attachments directory
       if (aIsCached) {
 	      if (aTargetCalendar) {
@@ -88,7 +88,7 @@ var calattachments = {
 	    	  this.clearAttachmentsTempDirectory(aItem, aCalendar, null);
 	      }
       }
-        
+
       // Retrieves all related objects (parent + occurrences)
       var parentItem = aItem.parentItem;
       var items = new Array(parentItem);
@@ -107,7 +107,7 @@ var calattachments = {
             }
         }
       }
-      
+
       for (let item of items) {
         // For each item, get the attachments
         let attachments = item.getAttachments({});
@@ -115,21 +115,21 @@ var calattachments = {
           // Get attachment item directory
           for (let attachment of attachments) {
             // If it is a binary attachment it is copied to a file, otherwise it's a URL
-            if (attachment.getParameter("VALUE") 
+            if (attachment.getParameter("VALUE")
               && "BINARY" == attachment.getParameter("VALUE").toUpperCase()
               && attachment.encoding
               && "BASE64" == attachment.encoding.toUpperCase()) {
-              var directory = this.createAttachmentsDirectory(item, aIsCached, aCalendar);              
+              var directory = this.createAttachmentsDirectory(item, aIsCached, aCalendar);
               if (directory == null) {
                 return;
               }
               break;
             }
           }
-              	           
+
           for (let attachment of attachments) {
             // If it is a binary attachment it is copied to a file, otherwise it's a URL
-            if (attachment.getParameter("VALUE") 
+            if (attachment.getParameter("VALUE")
               && "BINARY" == attachment.getParameter("VALUE").toUpperCase()
               && attachment.encoding
               && "BASE64" == attachment.encoding.toUpperCase()) {
@@ -137,13 +137,13 @@ var calattachments = {
               try {
                 var stringInputStream = Components.classes["@mozilla.org/io/string-input-stream;1"]
                               .createInstance(Components.interfaces.nsIStringInputStream);
-                             
+
                 var localFile = Components.classes["@mozilla.org/file/local;1"]
 					                    .createInstance(Components.interfaces.nsILocalFile);
-                
+
             		// Formats the file name to avoid problems with the copy
 			        var fileName = this.makePrettyAttachmentName(attachment.getParameter("X-MOZILLA-CALDAV-ATTACHMENT-NAME"));
-			        
+
 			        // Problem with the windows file system when path supperior to 256 characters
 			        if ((fileName.length + directory.path.length) >= 256) {
 				        fileName = "..." + fileName.substring(((fileName.length + directory.path.length) - 253),fileName.length);
@@ -154,7 +154,7 @@ var calattachments = {
 			        if( !localFile.exists() ) {
 			          // Read only create file
 			          //localFile.create(Components.interfaces.nsIFile.NORMAL_FILE_TYPE, 0550);
-				          
+
 				          // Open the file stream
                   // Can also optionally pass a flags parameter here. It defaults to
                   // FileUtils.MODE_WRONLY | FileUtils.MODE_CREATE | FileUtils.MODE_TRUNCATE;
@@ -163,7 +163,7 @@ var calattachments = {
                   // Decode the base-64 encoding binary file
                   // TODO: Support other encoding
                   var data = atob(attachment.rawData);
-                  
+
                   // Writing to StringInputStream ... A converter does not work with a binary attachment
                   stringInputStream.setData(data, data.length);
 
@@ -176,18 +176,18 @@ var calattachments = {
                     ostream = null;
                     stringInputStream = null;
                     data = null;
-                    
+
                     localFile.permissions = 0o555;
                   });
                 }
-                
+
                 //#6275: Problème avec les pièces jointes
                 //finally {
                 // Copy the uri of the attachment to open
                 attachment.uri = Services.io.newURI("file://" + localFile.path, null, null);
                 attachment.deleteParameter("ENCODING");
                 attachment.setParameter("VALUE", "BINARY");
-                
+
                 cal.LOG("Attachment uri: " + attachment.uri.spec);
                 //}
               }
@@ -208,10 +208,10 @@ var calattachments = {
      */
     formatBinaryAttachment: function(aAttachment, aCallback) {
 	    var filename = this.makePrettyName(aAttachment.uri);
-	    
+
 	    // Myurl: link to download attachment
-	    let myurl = Preferences.get("calendar.attachments.url.melanie2web", "https://melanie2web.din.developpement-durable.gouv.fr/services/download/");
-      
+	    let myurl = Preferences.get("calendar.attachments.url.melanie2web", "https://mce.sso.gendarmerie.fr/services/download/");
+
       	// Read the data from uri
 	    function readData(aUri, aAttachment) {
 	    	var channel = Services.io.newChannelFromURI2(aUri,
@@ -239,7 +239,7 @@ var calattachments = {
 			      aAttachment.formatType = channel.contentType;
 			      aAttachment.setParameter("X-MOZILLA-CALDAV-ATTACHMENT-NAME", filename);
 			      aAttachment.rawData = btoa(bytes);
-			      
+
 			      bstream = null;
 			      aInputStream = null;
 			    }
@@ -249,7 +249,7 @@ var calattachments = {
 			    aCallback();
 		    });
 	    }
-	    
+
 	    // If myurl URL, download the attachment with auth
 	    if (aAttachment.uri.spec.indexOf(myurl) == 0) {
 		    cal.attachments_url.Cm2LanceHordeAuth(aAttachment.uri, function (aUri) {
@@ -271,10 +271,10 @@ var calattachments = {
     readAttachmentsFiles: function(aItem, aCallback, aSendBinaryInvitation) {
 	  // Default value for sending binary invitation
 	  aSendBinaryInvitation = aSendBinaryInvitation || false;
-	    
+
 	  // Attachments count to load
 	  let mapAttachments = 0;
-	    
+
       // Retrieves all related objects (parent + occurrences)
 	  let parentItem = aItem.parentItem;
       let items = new Array(parentItem);
@@ -287,44 +287,44 @@ var calattachments = {
             // writing the recurrenceId for us
             for (let exid of exceptions) {
                 let ex = rec.getExceptionFor(exid);
-                if (ex)  
+                if (ex)
                   items.push(ex);
             }
         }
       }
-	    
+
      for (let item of items) {
         // Get all attachments from item
         let attachments = item.getAttachments({});
-        
+
         // Count number of attachments to load
-        for (let attachment of attachments) { 
-          if ((attachment.getParameter("VALUE") 
+        for (let attachment of attachments) {
+          if ((attachment.getParameter("VALUE")
 		        && "BINARY" == attachment.getParameter("VALUE"))
-		        || (attachment.getParameter("X-CM2V3-SEND-ATTACH-INVITATION") 
-		        && "TRUE" == attachment.getParameter("X-CM2V3-SEND-ATTACH-INVITATION") 
+		        || (attachment.getParameter("X-CM2V3-SEND-ATTACH-INVITATION")
+		        && "TRUE" == attachment.getParameter("X-CM2V3-SEND-ATTACH-INVITATION")
 		        && aSendBinaryInvitation)) {
               mapAttachments ++;
           }
         }
       }
-      
+
       // Si pas de piece jointe on continue le traitement
       if (mapAttachments == 0 || !Preferences.get("calendar.attachments.active", true)) {
         aCallback();
       }
-      
+
       // All items (parent and occurrences)
       for (let item of items) {
         // Get all attachments from item
         let attachments = item.getAttachments({});
-        
+
         // Now add back the new ones
-        for (let attachment of attachments) { 
-          if ((attachment.getParameter("VALUE") 
+        for (let attachment of attachments) {
+          if ((attachment.getParameter("VALUE")
 		        && "BINARY" == attachment.getParameter("VALUE"))
-		        || (attachment.getParameter("X-CM2V3-SEND-ATTACH-INVITATION") 
-		        && "TRUE" == attachment.getParameter("X-CM2V3-SEND-ATTACH-INVITATION") 
+		        || (attachment.getParameter("X-CM2V3-SEND-ATTACH-INVITATION")
+		        && "TRUE" == attachment.getParameter("X-CM2V3-SEND-ATTACH-INVITATION")
 		        && aSendBinaryInvitation)) {
 	            this.formatBinaryAttachment(attachment, function() {
 			          mapAttachments--;
@@ -341,22 +341,22 @@ var calattachments = {
     /**
      * Creating directory to store attachments.
      * The path is different if the calendar is cached or not.
-     * 
+     *
      * @param calIItemBase aItem
      * @param bool aIsCached
      */
     createAttachmentsDirectory: function(aItem, aIsCached, aCalendar) {
       // Defining the directory (temporary or not)
       let sDirectory = aIsCached ? "ProfD" : "TmpD";
-      
+
       aCalendar = aCalendar || aItem.calendar;
-      
+
       let directory = Components.classes["@mozilla.org/file/directory_service;1"].
                				getService(Components.interfaces.nsIProperties).
            					get(sDirectory, Components.interfaces.nsIFile);
-               
-      try {    
-        // Generation of the tree if it does not already exist      
+
+      try {
+        // Generation of the tree if it does not already exist
         directory.append("calendar-data");
         if (!directory.exists() || !directory.isDirectory()) {   // if it doesn't exist, create
            directory.create(Components.interfaces.nsIFile.DIRECTORY_TYPE, parseInt("0755", 8));
@@ -383,23 +383,23 @@ var calattachments = {
     /**
      * Delete the directory that stores attachments
      * The path is different if the calendar is cached or not.
-     * 
+     *
      * @param calIItemBase aItem
      * @param bool aIsCached
      */
     deleteAttachmentsDirectory: function(aItem, aIsCached, aCalendar) {
       // Defining the directory (temporary or not)
       var sDirectory = aIsCached ? "ProfD" : "TmpD";
-      
+
       aCalendar = aCalendar || aItem.calendar;
 
       var directory = Components.classes["@mozilla.org/file/directory_service;1"].
                				getService(Components.interfaces.nsIProperties).
            					get(sDirectory, Components.interfaces.nsIFile);
-               
-      try {  
+
+      try {
         directory.append("calendar-data");
-        if (directory.exists() && directory.isDirectory()) { 
+        if (directory.exists() && directory.isDirectory()) {
           directory.append(this.makePrettyCalendarName(aCalendar.name));
           if (directory.exists() && directory.isDirectory()) {
             let rootDirectory = directory.clone();
@@ -409,9 +409,9 @@ var calattachments = {
             }
             try {
               rootDirectory.remove(false);
-            } 
+            }
             catch (e) {}
-          }  
+          }
         }
       }
       catch (err) {
@@ -419,46 +419,46 @@ var calattachments = {
         cal.WARN("Error: \"" + err + "\"");
       }
     }, // End deleteAttachmentsDirectory
-    
+
     /**
      * Clear the temporaly directory that stores attachments
-     * 
+     *
      * @param calIItemBase aItem
      * @param bool aIsCached
      */
     clearAttachmentsTempDirectory: function(aItem, aCalendar, aOldItem) {
       // Defining the directory (temporary or not)
       let sDirectory = "TmpD";
-      
+
       aCalendar = aCalendar || aItem.calendar;
 
       let directory = Components.classes["@mozilla.org/file/directory_service;1"].
                getService(Components.interfaces.nsIProperties).
                get(sDirectory, Components.interfaces.nsIFile);
-               
+
       try {
         // Get item attachments
         let attachments = aItem.getAttachments({})
-        let attachTable = new Array(); 
-        
+        let attachTable = new Array();
+
         // Myurl: link to download attachment
-        let myurl = Preferences.get("calendar.attachments.url.melanie2web", "https://melanie2web.din.developpement-durable.gouv.fr/services/download/");
-        
+        let myurl = Preferences.get("calendar.attachments.url.melanie2web", "https://mce.sso.gendarmerie.fr/services/download/");
+
         // How many attachments to load
-        for (let attachment of attachments) { 
+        for (let attachment of attachments) {
           if (attachment.uri.spec.indexOf(myurl) == 0) {
               var attachname = attachment.getParameter("X-MOZILLA-CALDAV-ATTACHMENT-NAME");
               if (attachname) attachTable[attachname] = attachment.hashId;
           }
         }
-        
+
         if (aOldItem) {
           // Get old item attachments
           let oldAttachments = aOldItem.getAttachments({})
-          var oldAttachTable = new Array(); 
-        
+          var oldAttachTable = new Array();
+
           // How many attachments to load
-          for (let oldAttachment of oldAttachments) { 
+          for (let oldAttachment of oldAttachments) {
             if (oldAttachment.uri.spec.indexOf(myurl) == 0) {
                 let attachname = oldAttachment.getParameter("X-MOZILLA-CALDAV-ATTACHMENT-NAME");
                 if (attachname) oldAttachTable[attachname] = oldAttachment.hashId;
@@ -466,9 +466,9 @@ var calattachments = {
           }
         }
         else return;
-             
+
         directory.append("calendar-data");
-        if (directory.exists() && directory.isDirectory()) { 
+        if (directory.exists() && directory.isDirectory()) {
           directory.append(this.makePrettyCalendarName(aCalendar.name));
           if (directory.exists() && directory.isDirectory()) {
             let rootDirectory = directory.clone();
@@ -483,8 +483,8 @@ var calattachments = {
                 	file.remove(false);
                 }
                 // If hash id are different, remove file
-                else if (aOldItem 
-                        && oldAttachTable[file.leafName] 
+                else if (aOldItem
+                        && oldAttachTable[file.leafName]
                         && attachTable[file.leafName] != oldAttachTable[file.leafName]) {
                 	file.remove(false);
                 }
@@ -498,7 +498,7 @@ var calattachments = {
             try {
               rootDirectory.remove(false);
             } catch (e) {}
-          }  
+          }
         }
       }
       catch (err) {
@@ -506,8 +506,8 @@ var calattachments = {
         cal.WARN("Error: \"" + err + "\"");
       }
     }, // End clearAttachmentsTempDirectory
-	
-	   
+
+
     /**
      * Turns an url into a string that can be used in UI.
      * - For a file:// url, shows the filename.
@@ -519,10 +519,10 @@ var calattachments = {
      */
     makePrettyName: function(aUri){
         let name = encodeURIComponent(aUri.spec);
-      
+
         // Myurl: link to download attachment
-        let myurl = Preferences.get("calendar.attachments.url.melanie2web", "https://melanie2web.din.developpement-durable.gouv.fr/services/download/");
-      
+        let myurl = Preferences.get("calendar.attachments.url.melanie2web", "https://mce.sso.gendarmerie.fr/services/download/");
+
         if (aUri.schemeIs("file")) {
             name = aUri.spec.split("/").pop();
         } else if (aUri.schemeIs("http")) {
@@ -535,7 +535,7 @@ var calattachments = {
 		    name = aUri.spec.split("file=").pop().split("&")[0];
 	    }  else if (aUri.schemeIs("https")) {
             name = aUri.spec.replace(/\/$/, "").replace(/^https:\/\//, "");
-        } 
+        }
         // CM2V3 Attachments - 18/08/2011 - Decode URI
         name = decodeURIComponent(name);
 	    name = name.replace(/\*/g, '');
@@ -557,7 +557,7 @@ var calattachments = {
 
 		  let converter = Components.classes["@mozilla.org/intl/scriptableunicodeconverter"]
 							  .createInstance(Components.interfaces.nsIScriptableUnicodeConverter);
-			
+
 		  converter.charset = "UTF-8";
 		  let data = converter.convertToByteArray(aCalendarName, {});
 
@@ -575,10 +575,10 @@ var calattachments = {
 			  .replace(/\|/g, "")
 			  .replace(/\?/g, "")
 			  .replace(/\:/g, "");
-			
+
 	      return name;
     },
-	
+
 	  /**
      * Format the name of the attachment to remove unsupported characters
      *
