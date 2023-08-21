@@ -144,7 +144,8 @@ var calview = {
             }
         }
         // Result must be lowercase or style rule will not work.
-        return aString.toLowerCase().replace(/[^a-zA-Z0-9]/g, toReplacement);
+        // retirer espaces en début/fin de chaine pour affichage correct de la couleur
+        return aString.trim().toLowerCase().replace(/[^a-zA-Z0-9]/g, toReplacement);
     },
 
     /**
