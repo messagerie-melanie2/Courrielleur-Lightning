@@ -414,6 +414,10 @@ InvitationsManager.prototype = {
             !item.calendar.isInvitation(item)) {
             return false; // exclude if organizer has invited himself
         }
+
+        if(cal.itip == null)
+            return false;
+
         let start = item[cal.dtz.startDateProp(item)] || item[cal.dtz.endDateProp(item)];
         return cal.itip.isOpenInvitation(item) && start.compare(this.mStartDate) >= 0;
     }
