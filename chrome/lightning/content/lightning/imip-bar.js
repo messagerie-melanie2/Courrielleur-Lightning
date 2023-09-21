@@ -99,7 +99,7 @@ var ltnImipBar = {
             let imipBar = document.getElementById("imip-bar");
             imipBar.setAttribute("collapsed", "false");
             imipBar.setAttribute("label", cal.itip.getMethodText(itipItem.receivedMethod));
-            
+
             // CMel
             if (itipItem.receivedMethod == "REQUEST") {
             	let rdvtraite = MsgHasRdvTraite(gMessageDisplay.displayedMessage);
@@ -129,6 +129,7 @@ var ltnImipBar = {
      * Resets all buttons and its menuitems, all buttons are hidden thereafter
      */
     resetButtons: function() {
+        lastReset = Date.now();
         let buttons = ltnImipBar.getButtons();
         buttons.forEach(hideElement);
         buttons.forEach(aButton => ltnImipBar.getMenuItems(aButton).forEach(showElement));
@@ -212,7 +213,7 @@ var ltnImipBar = {
             calendars[i].refresh();
           }
         }
-        
+
         let imipBar = document.getElementById("imip-bar");
         let data = cal.itip.getOptionsText(itipItem, rc, actionFunc, foundItems);
 
@@ -260,21 +261,25 @@ var ltnImipBar = {
             }
         }
 
-        imipBar.setAttribute("label", data.label);
-        // let's reset all buttons first
-        ltnImipBar.resetButtons();
-        // now we update the visible items - buttons are hidden by default
-        // apart from that, we need this to adapt the accept button depending on
-        // whether three or four button style is present
-        for (let item of data.hideItems) {
-            hideElement(document.getElementById(item));
+        // #7437 Parfois, pas besoin de tout rafraichir.
+        if(data)
+        {
+            imipBar.setAttribute("label", data.label);
+            // let's reset all buttons first
+            ltnImipBar.resetButtons();
+            // now we update the visible items - buttons are hidden by default
+            // apart from that, we need this to adapt the accept button depending on
+            // whether three or four button style is present
+            for (let item of data.hideItems) {
+                hideElement(document.getElementById(item));
+            }
+            for (let item of data.showItems) {
+                showElement(document.getElementById(item));
+            }
+            // adjust button style if necessary
+            ltnImipBar.conformButtonType();
+            ltnImipBar.displayModifications();
         }
-        for (let item of data.showItems) {
-            showElement(document.getElementById(item));
-        }
-        // adjust button style if necessary
-        ltnImipBar.conformButtonType();
-        ltnImipBar.displayModifications();
     },
 
     /**
@@ -334,6 +339,7 @@ var ltnImipBar = {
          * @returns {Boolean}                    true, if the action succeeded
          */
         function _execAction(aActionFunc, aItipItem, aWindow, aPartStat, aExtResponse) {
+            cal.LOG("in _execAction - User pressed the button.");
             if (cal.itip.promptCalendar(aActionFunc.method, aItipItem, aWindow)) {
                 let isDeclineCounter = aPartStat == "X-DECLINECOUNTER";
                 // filter out fake partstats
@@ -341,9 +347,10 @@ var ltnImipBar = {
                     aParticipantStatus = "";
                 }
                 // hide the buttons now, to disable pressing them twice...
-                if (aPartStat == aParticipantStatus) {
+                //#7437 Reset les bouttons dans tous les cas
+                //if (aPartStat == aParticipantStatus) {
                     ltnImipBar.resetButtons();
-                }
+                //}
 
                 let opListener = {
                     QueryInterface: XPCOMUtils.generateQI([Components.interfaces.calIOperationListener]),
@@ -402,12 +409,14 @@ var ltnImipBar = {
                         }
                     },
                     onGetResult: function(aCalendar, aStatus, aItemType, aDetail, aCount, aItems) {
+                        cal.LOG("in onGetResult - aCalendar.name: "+aCalendar.name);
                     }
                 };
 
                 try {
                     // CMel
                     // Bugzilla 168680 - Add email attachments
+                    cal.LOG("in _execAction - Starting aActionFunc");
                     aActionFunc(opListener, aParticipantStatus, aExtResponse, currentAttachments);
                     // CMel
                 } catch (exc) {
@@ -504,7 +513,7 @@ var ltnImipBar = {
                 let delTime = delmgr.getDeletedDate(items[0].id);
                 let dialogText = cal.l10n.getLtnString("confirmProcessInvitation");
                 let dialogTitle = cal.l10n.getLtnString("confirmProcessInvitationTitle");
-                
+
                 // #6272: Le choix d'agenda par défaut n'est pas respecté lors de l'acceptation d'une invitation
                 if(delTime)
                 {
@@ -564,7 +573,7 @@ addEventListener("messagepane-unloaded", ltnImipBar.unload, true);
 function MsgSetRdvTraite(msghdr) {
   var msgs = Components.classes["@mozilla.org/array;1"]
   						.createInstance(Components.interfaces.nsIMutableArray);
-  
+
   msgs.appendElement(msghdr, false);
   msghdr.folder.addKeywordsToMessages(msgs, TAG_RDVTRAITE);
   msghdr.folder.markMessagesRead(msgs, true);

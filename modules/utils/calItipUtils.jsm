@@ -189,7 +189,7 @@ var calitip = {
                  // Fall back to using the one from the itipItem's ICS.
             imipMethod = itipItem.receivedMethod;
         }
-        cal.LOG("iTIP method: " + imipMethod);
+        cal.LOG("in initItemFromMsgData - imipMethod: " + imipMethod);
 
         let isWritableCalendar = function(aCalendar) {
             /* TODO: missing ACL check for existing items (require callback API) */
@@ -241,9 +241,11 @@ var calitip = {
      * @return {String}            The localized text about the method.
      */
     getMethodText: function(method) {
+        cal.LOG("in getMethodText - methode: "+method);
         switch (method) {
             case "REFRESH": return cal.l10n.getLtnString("imipBarRefreshText");
-            case "REQUEST": return cal.l10n.getLtnString("imipBarAlreadyProcessedText");//return cal.l10n.getLtnString("imipBarRequestText");
+            case "REQUEST": return cal.l10n.getLtnString("imipBarAlreadyProcessedText");
+            //case "REQUEST": return cal.l10n.getLtnString("imipBarRequestText");
             case "PUBLISH": return cal.l10n.getLtnString("imipBarPublishText");
             case "CANCEL": return cal.l10n.getLtnString("imipBarCancelText");
             case "REPLY": return cal.l10n.getLtnString("imipBarReplyText");
@@ -276,6 +278,14 @@ var calitip = {
      * @return {Object}                     Return information about the options
      */
     getOptionsText: function(itipItem, rc, actionFunc, foundItems) {
+        //#7437: On vérifie qu'on ne vient pas de reset les boutons
+        let now = Date.now();
+        if (now - cal.lastReset <= 2000) {
+            cal.LOG("in getOptionsText - Button refresh was too fast. Returning.");
+            return;
+        }
+        cal.LOG("in getOptionsText - Updating buttons.");
+
         let imipLabel = null;
         if (itipItem.receivedMethod) {
             imipLabel = calitip.getMethodText(itipItem.receivedMethod);
@@ -288,14 +298,16 @@ var calitip = {
             let disallow = foundItems[0].getProperty("X-MICROSOFT-DISALLOW-COUNTER");
             disallowedCounter = disallow && disallow == "TRUE";
         }
-        
-        if (rc == Components.interfaces.calIErrors.CAL_IS_READONLY) 
+
+        if (rc == Components.interfaces.calIErrors.CAL_IS_READONLY)
         {
             // No writable calendars, tell the user about it
             data.label = cal.l10n.getLtnString("imipBarNotWritable");
         }
-        else if (Components.isSuccessCode(rc) && (actionFunc == null || !actionFunc)) 
+        else if (Components.isSuccessCode(rc) && (actionFunc == null || !actionFunc))
         {
+            cal.LOG("in getOptionsText - Components.isSuccessCode(rc): "+Components.isSuccessCode(rc));
+            cal.LOG("in getOptionsText - actionFunc is not defined: "+(actionFunc == null || !actionFunc));
             // This case, they clicked on an old message that has already been
             // added/updated, we want to tell them that.
             data.label = cal.l10n.getLtnString("imipBarAlreadyProcessedText");
@@ -341,18 +353,18 @@ var calitip = {
             } else if (itipItem.receivedMethod == "DECLINECOUNTER") {
                 data.label = cal.l10n.getLtnString("imipBarDeclineCounterText");
             }
-        } 
-        else if (Components.isSuccessCode(rc)) 
+        }
+        else if (Components.isSuccessCode(rc))
         {
           var sequenceError = false;
           //#6723: La sequence n'est pas prise en compte pour une invitation uniquement pour une mise a jour
           if (foundItems && foundItems.length > 0)
           {
             let comparison;
-            for (let item of itipItem.getItemList({})) 
+            for (let item of itipItem.getItemList({}))
             {
                 comparison = calitip.compareSequence(item, foundItems[foundItems.length-1]);
-                if (comparison == 1) 
+                if (comparison == 1)
                 {
                   //#7392 Récurrence: Occurence modifiée (changement d'heure) lorsque le participant accepte l'occurencde le label signal eveneemnt annulé
                   /*sequenceError = true;
@@ -360,9 +372,10 @@ var calitip = {
                   //#7031: Annulation evt transmis depuis messagerie externe
                   data.label = cal.l10n.getLtnString("imipBarCancelText");
                   break;*/
-                } 
-                else if (comparison == -1) 
+                }
+                else if (comparison == -1)
                 {
+                  cal.LOG("in getOptionsText - comparison: "+comparison);
                   data.showItems.push("imipDetailsButton");
                   sequenceError = true;
                   data.label = cal.l10n.getLtnString("imipBarAlreadyProcessedText");
@@ -370,7 +383,7 @@ var calitip = {
             }
           }
           //#6723: FIN La sequence n'est pas prise en compte pour une invitation uniquement pour une mise a jour
-          
+
           // #6846 actionFunc null
           if(sequenceError == true || actionFunc == null)
           {
@@ -379,10 +392,11 @@ var calitip = {
           else
           {
             cal.LOG("iTIP options on: " + actionFunc.method);
-            switch (actionFunc.method) 
+            switch (actionFunc.method)
             {
                 case "PUBLISH:UPDATE":
-                case "REQUEST:UPDATE-MINOR":
+                // #7437 Plus de mail sur mise à jour mineur, donc forcément majeure.
+                //case "REQUEST:UPDATE-MINOR":
                     data.label = cal.l10n.getLtnString("imipBarUpdateText");
                     // falls through
                 case "REPLY":
@@ -391,6 +405,8 @@ var calitip = {
                 case "PUBLISH":
                     data.showItems.push("imipAddButton");
                     break;
+                // #7437 Plus de mail sur mise à jour mineur, donc forcément majeure.
+                case "REQUEST:UPDATE-MINOR":
                 case "REQUEST:UPDATE":
                 case "REQUEST:NEEDS-ACTION":
                 case "REQUEST": {
@@ -592,9 +608,8 @@ var calitip = {
      * @param {DOMWindpw} aWindow       The window to open the dialog on.
      * @return {Boolean}                True, if a calendar was selected or no selection is needed.
      */
-    promptCalendar: function(aMethod, aItipItem, aWindow) 
+    promptCalendar: function(aMethod, aItipItem, aWindow)
     {
-      console.log("promptCalendar");
       let needsCalendar = false;
       let targetCalendar = null;
       switch (aMethod) {
@@ -619,22 +634,22 @@ var calitip = {
           // CMel
           //let matchingCals=null;
           // Fin CMel #6207 ne pas filtrer les agendas, tous les proposer
-          /*if (aItipItem.receivedMethod == "REQUEST") 
+          /*if (aItipItem.receivedMethod == "REQUEST")
           {
               // try to further limit down the list to those calendars that
               // are configured to a matching attendee;
               let item = aItipItem.getItemList({})[0];
               // CMel
               //matchingCals = calendars.filter(calendar => calitip.getInvitedAttendee(item, calendar, aWindow) != null);
-              
-              // Fin CMel 
+
+              // Fin CMel
               // if there's none, we will show the whole list of calendars:
               //if (matchingCals != null && matchingCals.length > 0) {
                   //calendars = matchingCals;
                   //aWindow.alert("calendars: " + calendars);
               //}
           }*/
-          
+
           if (calendars.length == 0) {
               let msg = cal.l10n.getLtnString("imipNoCalendarAvailable");
               aWindow.alert(msg);
@@ -656,10 +671,12 @@ var calitip = {
           }
 
           if (targetCalendar) {
+              cal.LOG("in promptCalendar - targetCalendar.name: "+targetCalendar.name);
               aItipItem.targetCalendar = targetCalendar;
           }
       }
 
+      cal.lastReset = Date.now();
       return !needsCalendar || targetCalendar != null;
     },
 
@@ -1545,7 +1562,7 @@ function addAttachments(attachments, aItem) {
   var aTmpAttachments = aItem.getAttachments({});
   aItem.removeAllAttachments();
   if (aTmpAttachments && aTmpAttachments.length > 0) {
-    for (let aTmpAttachment of aTmpAttachments) { 
+    for (let aTmpAttachment of aTmpAttachments) {
       if (!aTmpAttachment.rawData.match("^CID")) {
         aItem.addAttachment(aTmpAttachment);
       }
@@ -1553,15 +1570,15 @@ function addAttachments(attachments, aItem) {
   }
   if (attachments && attachments.length > 0) {
     // Now add back the new ones
-    for (let attachment of attachments) { 
+    for (let attachment of attachments) {
       // Bugzilla 168680 - Made the binary attachment
-      if (attachment.contentType != "text/calendar" 
+      if (attachment.contentType != "text/calendar"
             && attachment.contentType != "application/ics") {
         var aAttachment = Components.classes["@mozilla.org/calendar/attachment;1"].
                             createInstance(Components.interfaces.calIAttachment);
 
         aAttachment.rawData = attachment.url;
-        
+
         aItem.addAttachment(aAttachment);
       }
     }
@@ -1726,11 +1743,17 @@ ItipItemFinder.prototype = {
         let operations = [];
 
         if (this.mFoundItems.length > 0) {
-            // Save the target calendar on the itip item
-            this.mItipItem.targetCalendar = this.mFoundItems[0].calendar;
-            this._observeChanges(this.mItipItem.targetCalendar);
-
-            cal.LOG("iTIP on " + method + ": found " + this.mFoundItems.length + " items.");
+            // #7437 Uniquement si on a pas de targetCalendar.
+            if(this.mItipItem.targetCalendar == null)
+            {
+                // Save the target calendar on the itip item
+                cal.LOG("in processFoundItems - targetCalendar set to mFoundItems[0].calendar");
+                this.mItipItem.targetCalendar = this.mFoundItems[0].calendar;
+                this._observeChanges(this.mItipItem.targetCalendar);
+            }
+            //this.mItipItem.targetCalendar = this.mFoundItems[0].calendar;
+            //this._observeChanges(this.mItipItem.targetCalendar);
+            cal.LOG("in processFoundItems - " + method + ": found " + this.mFoundItems.length + " items.");
             switch (method) {
                 // XXX todo: there's still a potential flaw, if multiple PUBLISH/REPLY/REQUEST on
                 //           occurrences happen at once; those lead to multiple
@@ -1747,6 +1770,9 @@ ItipItemFinder.prototype = {
                 case "DECLINECOUNTER":
                     for (let itipItemItem of this.mItipItem.getItemList({})) {
                         for (let item of this.mFoundItems) {
+                            //#7437 Pas besoin d'envoyer plus d'opérations
+                            if(operations.count >= 1)
+                                break;
                             let rid = itipItemItem.recurrenceId; //  XXX todo support multiple
                             if (rid) { // actually applies to individual occurrence(s)
                                 if (item.recurrenceInfo) {
@@ -1758,14 +1784,14 @@ ItipItemFinder.prototype = {
                                     itipItemItem = itipItemItem.parentItem;
                                 }
                             }
-
+                            cal.LOG("in processFoundItems - Looping on method switch");
                             switch (method) {
                                 case "REFRESH": { // xxx todo test
                                     let attendees = itipItemItem.getAttendees({});
-                                    cal.ASSERT(attendees.length == 1,
-                                               "invalid number of attendees in REFRESH!");
+                                    cal.ASSERT(attendees.length == 1, "invalid number of attendees in REFRESH!");
                                     if (attendees.length > 0) {
                                         let action = function(opListener, partStat, extResponse) {
+                                            cal.LOG("in processFoundItems - modifyItem 1");
                                             if (!item.organizer) {
                                                 let org = createOrganizer(item.calendar);
                                                 if (org) {
@@ -1806,25 +1832,75 @@ ItipItemFinder.prototype = {
                             		// Fin CMel
                                     let newItem = updateItem(item, itipItemItem);
                                     let att = calitip.getInvitedAttendee(newItem);
-                                    if (!att) { // fall back to using configured organizer
-                                        att = createOrganizer(newItem.calendar);
-                                        if (att) {
-                                            att.isOrganizer = false;
+
+                                    // #7437 Envoyer toutes les occurences a pour effet de bord de perdre l'attendee
+                                    // Avant de fall back sur l'organisateur, on essaye donc de déterminer l'attendee par le destinataire.
+                                    let invitationAttendees = newItem.getAttendees({})
+                                    let invitedAttendee = null;
+                                    for(let attTmp of invitationAttendees)
+                                    {
+                                        cal.LOG("in processFoundItems - comparing looping attendee to this mail attendee: "+attTmp.id+" vs "+this.mItipItem.identity);
+                                        // id sous la forme mailto:mail@mail.fr
+                                        if(this.mItipItem.identity.includes(attTmp.id.split(":")[1]))
+                                        {
+                                            cal.LOG("in processFoundItems - Found attendee by mail: "+attTmp.id.split(":")[1]);
+                                            invitedAttendee = attTmp;
+                                            invitedAttendee.isOrganizer = false;
+                                            break;
+                                        }
+                                    }
+
+                                    if(att && invitedAttendee && (att.name != invitedAttendee.name)) {
+                                        cal.LOG("in processFoundItems - Invited attendee does not match. Continue looping to find a better one.");
+                                        break;
+                                    }
+                                    else if (!att) {
+                                        att = invitedAttendee;
+                                        if (!att) {
+                                            // fall back to using configured organizer
+                                            cal.LOG("in processFoundItems - Falling attendee back to organizer.");
+                                            att = createOrganizer(newItem.calendar);
+                                            if (att) {
+                                                att.isOrganizer = false;
+                                            }
                                         }
                                     }
                                     if (att) {
-                                        let firstFoundItem = this.mFoundItems[0];
+                                        cal.LOG("in processFoundItems - Processing with att.commonName: "+att.commonName);
+                                        let firstFoundItem = newItem;//this.mFoundItems[0];
+                                        // #7437 On récupère l'item qui correspond à l'attendee determiné
+                                        let matchingItem = null;
+                                        for (let tmpItipItem of this.mItipItem.getItemList({})) {
+                                            for (let tmpItem of this.mFoundItems) {
+                                                let itemLoop = updateItem(tmpItem, tmpItipItem);
+                                                if(calitip.getInvitedAttendee(itemLoop) && itemLoop && itemLoop.calendar.name == att.commonName)
+                                                {
+                                                    cal.LOG("in processFoundItems - Found matching calendar.name: "+itemLoop.calendar.name);
+                                                    matchingItem = itemLoop;
+                                                    break;
+                                                }
+                                            }
+                                        }
+                                        firstFoundItem.calendar = matchingItem != null ? matchingItem.calendar:newItem.calendar;
+                                        let updatedItem = item.clone();
+                                        updatedItem.calendar = firstFoundItem.calendar;
+                                        cal.LOG("in processFoundItems - firstFoundItem.calendar.name: "+firstFoundItem.calendar.name);
+
                                         // again, fall back to using configured organizer if not found
-                                        let foundAttendee = firstFoundItem.getAttendeeById(att.id) || att;
+                                        // #7437 On utilise att plutôt que de fallback sur foundAttendee dans ce bloc
+                                        //let foundAttendee = firstFoundItem.getAttendeeById(att.id) || att;
+                                        let foundAttendee = att;
 
                                         // If the the user hasn't responded to the invitation yet and we
                                         // are viewing the current representation of the item, show the
                                         // accept/decline buttons. This means newer events will show the
                                         // "Update" button and older events will show the "already
                                         // processed" text.
-                                        if (foundAttendee.participationStatus == "NEEDS-ACTION" &&
-                                            (item.calendar.getProperty("itip.disableRevisionChecks") ||
-                                             calitip.compare(itipItemItem, item) == 0)) {
+                                        cal.LOG("in processFoundItems - foundAttendee.participationStatus: "+foundAttendee.participationStatus);
+                                        if (foundAttendee.participationStatus == "NEEDS-ACTION")
+                                        //&& (updatedItem.calendar.getProperty("itip.disableRevisionChecks") || calitip.compare(itipItemItem, updatedItem) == 0))
+                                        {
+                                            cal.LOG("in processFoundItems - pushing operation modifyItem 2 on: " + firstFoundItem.calendar.name);
                                             actionMethod = "REQUEST:NEEDS-ACTION";
                                             operations.push((opListener, partStat, extResponse) => {
                                                 let changedItem = firstFoundItem.clone();
@@ -1835,20 +1911,19 @@ ItipItemFinder.prototype = {
                                                 }
                                                 changedItem.addAttendee(foundAttendee);
 
-                                                return changedItem.calendar.modifyItem(
-                                                    changedItem, firstFoundItem, new ItipOpListener(opListener, firstFoundItem, extResponse));
+                                                newItem.setProperty("X-CM2V3-ACTION","MODIFY");
+                                                return changedItem.calendar.modifyItem(changedItem, firstFoundItem, new ItipOpListener(opListener, firstFoundItem, extResponse));
                                             });
-                                        } else if (item.calendar.getProperty("itip.disableRevisionChecks") ||
-                                                   calitip.compare(itipItemItem, item) > 0) {
-                                            addScheduleAgentClient(newItem, item.calendar);
-
-                                            let isMinorUpdate = calitip.getSequence(newItem) ==
-                                                                calitip.getSequence(item);
-                                            actionMethod = (isMinorUpdate ? method + ":UPDATE-MINOR"
-                                                                          : method + ":UPDATE");
+                                        }
+                                        else if (updatedItem.calendar.getProperty("itip.disableRevisionChecks") ||
+                                                   calitip.compare(itipItemItem, updatedItem) > 0) {
+                                            addScheduleAgentClient(newItem, updatedItem.calendar);
+                                            let isMinorUpdate = calitip.getSequence(newItem) == calitip.getSequence(updatedItem);
+                                            actionMethod = (isMinorUpdate ? method + ":UPDATE-MINOR" : method + ":UPDATE");
+                                            cal.LOG("in processFoundItems - pushing operation modifyItem 3 on: "+updatedItem.calendar.name);
                                             operations.push((opListener, partStat, extResponse) => {
                                                 if (!partStat) { // keep PARTSTAT
-                                                    let att_ = calitip.getInvitedAttendee(item);
+                                                    let att_ = calitip.getInvitedAttendee(updatedItem);
                                                     partStat = att_ ? att_.participationStatus : "NEEDS-ACTION";
                                                 }
                                                 newItem.removeAttendee(att);
@@ -1857,10 +1932,10 @@ ItipItemFinder.prototype = {
                                                 att.participationStatus = partStat;
                                                 newItem.addAttendee(att);
                                                 // CMel
-                                        		newItem.setProperty("X-CM2V3-ACTION","MODIFY");
-                                        		// Fin CMel
+                                                newItem.setProperty("X-CM2V3-ACTION","MODIFY");
+                                                // Fin CMel
                                                 return newItem.calendar.modifyItem(
-                                                    newItem, item, new ItipOpListener(opListener, item, extResponse));
+                                                    newItem, updatedItem, new ItipOpListener(opListener, updatedItem, extResponse));
                                             });
                                         }
                                     }
@@ -1929,6 +2004,7 @@ ItipItemFinder.prototype = {
                                             // appropriate reply will be taken care within the
                                             // opListener (defined in imip-bar.js)
                                             // TODO: move that from imip-bar.js to here
+                                            cal.LOG("in processFoundItems - modifyItem 4");
                                             return newItem.calendar.modifyItem(
                                                 newItem, item,
                                                 newItem.calendar.getProperty("itip.notify-replies")
@@ -1959,6 +2035,7 @@ ItipItemFinder.prototype = {
                                         // Make sure the provider-specified properties are copied over
                                         copyProviderProperties(this.mItipItem, itipItemItem, newItem);
 
+                                        cal.LOG("in processFoundItems - modifyItem 5");
                                         operations.push((opListener, partStat, extResponse) =>
                                             newItem.calendar.modifyItem(newItem, item, opListener)
                                         );
@@ -2059,7 +2136,7 @@ ItipItemFinder.prototype = {
             }
         }
 
-        //cal.LOG("iTIP operations: " + operations.length);
+        cal.LOG("in processFoundItems - operations count: " + operations.length);
         let actionFunc = null;
         if (operations.length > 0) {
         	// CMel - Bugzilla 168680 - Attachments in action
@@ -2081,28 +2158,31 @@ ItipItemFinder.prototype = {
 
     onGetResult: function(aCalendar, aStatus, aItemType, aDetail, aCount, aItems) {
         if (Components.isSuccessCode(aStatus)) {
-        	// CMel 
+        	// CMel
           //#6723: FIN La sequence n'est pas prise en compte pour une invitation uniquement pour une mise a jour
             //cal.LOG("*** calItipUtils.jsm onGetResult receivedMethod:"+this.mItipItem.receivedMethod);
             //cal.LOG("*** calItipUtils.jsm onGetResult localStatus:"+this.mItipItem.localStatus);
             if (this.mItipItem.receivedMethod == "REQUEST" && this.mItipItem.localStatus != "~rdvtraite") {
-              let item = this.mItipItem.getItemList({})[0];
-              let seq = cal.itip.getSequence(item);
-              //cal.LOG("*** calItipUtils.jsm REQUEST ~rdvtraite!=this.mItipItem.localStatus SEQUENCE:"+seq);
-              try
-              {
-                if(calitip.compareSequence(item, this.mFoundItems.concat(aItems)[this.mFoundItems.concat(aItems).length-1]) == -1)
-                  this.mFoundItems = this.mFoundItems.concat(aItems);
-              }
-              catch(ex)
-              {
-                return;
-              }
-              if (this.mItipItem.getItemList({}).length == 1) //(seq == null || seq == 0)) 
-              {
-                //cal.LOG("*** calItipUtils.jsm REQUEST ~rdvtraite!=this.mItipItem.localStatus");
-                return;
-              }
+                let item = this.mItipItem.getItemList({})[0];
+                let seq = cal.itip.getSequence(item);
+                //cal.LOG("*** calItipUtils.jsm REQUEST ~rdvtraite!=this.mItipItem.localStatus SEQUENCE:"+seq);
+                try
+                {
+                    if(calitip.compareSequence(item, this.mFoundItems.concat(aItems)[this.mFoundItems.concat(aItems).length-1]) == -1)
+                    {
+                        this.mFoundItems = this.mFoundItems.concat(aItems);
+                        return;
+                    }
+                }
+                catch(ex)
+                {
+                    return;
+                }
+                // #7437 Ajout de la contrainte seq == 0 pour envoyer les exceptions de récurrence
+                if (this.mItipItem.getItemList({}).length == 1 && seq == 0) //(seq == null || seq == 0))
+                {
+                    return;
+                }
             }
             // Fin CMel
             //if(this.mFoundItems.concat(aItems) != null)

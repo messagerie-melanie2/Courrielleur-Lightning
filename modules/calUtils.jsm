@@ -12,6 +12,9 @@ ChromeUtils.import("resource://gre/modules/Preferences.jsm");
 // Getting the service here will load if its not already loaded
 Components.classes["@mozilla.org/calendar/backend-loader;1"].getService();
 
+//#7437: Temps depuis la dernière réinitialisation des boutons
+var lastReset = Date.now();
+
 // The calendar console instance
 var gCalendarConsole = new ConsoleAPI({
     prefix: "Lightning",
@@ -85,7 +88,7 @@ var cal = {
      */
     LOG: function(aLog)
     {
-        //#7068: Console tronquée lors de logs trop longs            
+        //#7068: Console tronquée lors de logs trop longs
         if(aLog.length > 9000)
         {
             let logArray = aLog.match(/(.|[\r\n]){1,9000}/g);
