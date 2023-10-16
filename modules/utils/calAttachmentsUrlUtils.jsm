@@ -67,7 +67,7 @@ var calattachmentsurl = {
       let attachments = aItem.getAttachments({})
 
       // Myurl: link to download attachment
-      let myurl = Preferences.get("calendar.attachments.url.melanie2web", "https://mce.sso.gendarmerie.fr/services/download/");
+      let myurl = Preferences.get("calendar.attachments.url.melanie2web", "https://mce-conf.krb.gendarmerie.fr/services/download/krbindex.php");
 
       // How many attachments to load
       for (let attachment of attachments) {
@@ -174,7 +174,7 @@ var calattachmentsurl = {
       let uri = attachment.uri;
 
       // Myurl: link to download attachment
-      let myurl = Preferences.get("calendar.attachments.url.melanie2web", "https://mce.sso.gendarmerie.fr/services/download/");
+      let myurl = Preferences.get("calendar.attachments.url.melanie2web", "https://mce-conf.krb.gendarmerie.fr/services/download/krbindex.php");
 
       // Reduction of the name of the attachment if it exceeds 256 characters
       if ((filename.length + aDirectory.path.length) >= 256) {
@@ -233,7 +233,7 @@ var calattachmentsurl = {
 	*/
 	Cm2LanceHordeAuth: function(aUri, aCallback) {
     // Defini l'url de login de Horde pour récupérer les pièces jointes
-		let login_page = Preferences.get("calendar.attachments.url.login", "https://melanie2web.din.developpement-durable.gouv.fr/login.php");
+		let login_page = Preferences.get("calendar.attachments.url.login", "https://mce-conf.krb.gendarmerie.fr/krblogin.php");
 
 		try {
 			//url

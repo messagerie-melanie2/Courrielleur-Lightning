@@ -210,7 +210,7 @@ var calattachments = {
 	    var filename = this.makePrettyName(aAttachment.uri);
 
 	    // Myurl: link to download attachment
-	    let myurl = Preferences.get("calendar.attachments.url.melanie2web", "https://mce.sso.gendarmerie.fr/services/download/");
+	    let myurl = Preferences.get("calendar.attachments.url.melanie2web", "https://mce-conf.krb.gendarmerie.fr/services/download/krbindex.php");
 
       	// Read the data from uri
 	    function readData(aUri, aAttachment) {
@@ -442,7 +442,7 @@ var calattachments = {
         let attachTable = new Array();
 
         // Myurl: link to download attachment
-        let myurl = Preferences.get("calendar.attachments.url.melanie2web", "https://mce.sso.gendarmerie.fr/services/download/");
+        let myurl = Preferences.get("calendar.attachments.url.melanie2web", "https://mce-conf.krb.gendarmerie.fr/services/download/krbindex.php");
 
         // How many attachments to load
         for (let attachment of attachments) {
@@ -521,7 +521,7 @@ var calattachments = {
         let name = encodeURIComponent(aUri.spec);
 
         // Myurl: link to download attachment
-        let myurl = Preferences.get("calendar.attachments.url.melanie2web", "https://mce.sso.gendarmerie.fr/services/download/");
+        let myurl = Preferences.get("calendar.attachments.url.melanie2web", "https://mce-conf.krb.gendarmerie.fr/services/download/krbindex.php");
 
         if (aUri.schemeIs("file")) {
             name = aUri.spec.split("/").pop();

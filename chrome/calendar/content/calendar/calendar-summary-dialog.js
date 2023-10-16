@@ -532,7 +532,7 @@ function addAttachment(aAttachment) {
         cellItem.setAttribute("label", cal.attachments.makePrettyName(attachment.uri));
         cellItem.setAttribute("crop", "end");
         cellItem.setAttribute("class", "listitem-iconic");
-        let myurl = Preferences.get("calendar.attachments.url.melanie2web", "https://mce.sso.gendarmerie.fr/services/download");
+        let myurl = Preferences.get("calendar.attachments.url.melanie2web", "https://mce-conf.krb.gendarmerie.fr/services/download/krbindex.php");
         if (attachment.uri.schemeIs("file")) {
             // Change icons view
             //item.setAttribute("image", "moz-icon://" + attachment.uri);

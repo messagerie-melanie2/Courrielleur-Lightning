@@ -20,7 +20,7 @@ function openAttachment() {
 
       // Melanie2Web link to download attachment
       let myurl = Preferences.get("calendar.attachments.url.melanie2web",
-                                  "https://mce.sso.gendarmerie.fr/services/download/");
+                                  "https://mce-conf.krb.gendarmerie.fr/services/download/krbindex.php");
 
       if (attachment.uri.spec.indexOf(myurl) == 0) {
         // Show message on status bar
@@ -142,7 +142,7 @@ function downloadAttachment() {
       let attachment = documentLink.getSelectedItem(0).attachment.clone();
 
       // Melanie2Web link to download attachment
-      let myurl = Preferences.get("calendar.attachments.url.melanie2web", "https://mce.sso.gendarmerie.fr/services/download/");
+      let myurl = Preferences.get("calendar.attachments.url.melanie2web", "https://mce-conf.krb.gendarmerie.fr/services/download/krbindex.php");
       if (attachment.uri.spec.indexOf(myurl) == 0) {
 
         window.setCursor("wait");
@@ -217,7 +217,7 @@ function saveAsAttachment() {
 
         // Melanie2Web link to download attachment
         let myurl = Preferences.get("calendar.attachments.url.melanie2web",
-                                    "https://mce.sso.gendarmerie.fr/services/download/");
+                                    "https://mce-conf.krb.gendarmerie.fr/services/download/krbindex.php");
 
         if (attachment.uri.spec.indexOf(myurl) == 0) {
           // Show message on status bar
@@ -291,7 +291,7 @@ function modifyAttachment() {
       window.setCursor("wait");
 
       // Melanie2Web link to download attachment
-      let myurl = Preferences.get("calendar.attachments.url.melanie2web", "https://mce.sso.gendarmerie.fr/services/download/");
+      let myurl = Preferences.get("calendar.attachments.url.melanie2web", "https://mce-conf.krb.gendarmerie.fr/services/download/krbindex.php");
 
       if (attachment.uri.spec.indexOf(myurl) == 0) {
         // Show message on status bar
