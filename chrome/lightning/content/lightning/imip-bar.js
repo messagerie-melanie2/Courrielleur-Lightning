@@ -201,10 +201,10 @@ var ltnImipBar = {
      */
     setupOptions: function(itipItem, rc, actionFunc, foundItems) {
         //#6927: Forcer une synchronisation d'agenda avant l'affichage d'une invitation
-        //(Uniquement si la date de dernier rafraichissement est infèrieur à la date du message et date de plus de 1 minute)
+        //(/*Uniquement si la date de dernier rafraichissement est infèrieur à la date du message et*/ date de plus de 1 minute)
         let refreshTreshold = new Date(Date.now());
         refreshTreshold.setMinutes(refreshTreshold.getMinutes()-1);
-        if(lastRefresh < gMessageDisplay.displayedMessage.date/1000 && lastRefresh < refreshTreshold)
+        if(lastRefresh < gMessageDisplay.displayedMessage.date/1000 || lastRefresh < refreshTreshold)
         {
           lastRefresh = new Date(Date.now());
           let calendars = cal.getCalendarManager().getCalendars({});//.filter(cal.itip.isSchedulingCalendar);
