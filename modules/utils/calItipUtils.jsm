@@ -17,7 +17,8 @@ XPCOMUtils.defineLazyModuleGetter(this, "cal", "resource://calendar/modules/calU
 // including calUtils.jsm under the cal.itip namespace.
 
 this.EXPORTED_SYMBOLS = ["calitip"]; /* exported calitip */
-
+// #8060 flag de non notification d'annulation lors de déplacement d'événement, contient l'id du calendrier original
+var dontNotifyCancelThisId = "";
 var calitip = {
     /**
      * Gets the sequence/revision number, either of the passed item or the last received one of an
@@ -453,6 +454,7 @@ var calitip = {
                         }
                         data.showItems.push("imipDeclineRecurrencesButton");
                     } else {
+                        cal.LOG("itipItem.status: " + itipItem.status);
                         data.showItems.push("imipAcceptButton");
                         if (separateButtons) {
                             data.showItems.push("imipTentativeButton");
@@ -927,10 +929,26 @@ var calitip = {
             }
         }
 
-        if (aOpType == Components.interfaces.calIOperationListener.DELETE) {
+        // check whether it's a simple UPDATE (no SEQUENCE change) or real (RE)REQUEST,
+        // in case of time or location/description change.
+        // #8060 isAMovingEvent permet de déterminer si l'événement est en cours de déplacement d'un agenda à un autre.
+        let isMinorUpdate = (aOriginalItem && (calitip.getSequence(aItem) == calitip.getSequence(aOriginalItem)));
+        let isAMovingEvent = (aOriginalItem != null && aItem.calendar.id != aOriginalItem.calendar.id);
+        /*console.log("isMinorUpdate: "+isMinorUpdate);
+        console.log("isAMovingEvent: "+isAMovingEvent);
+        console.log("aOriginalItem: "+aOriginalItem);
+        console.log("aItem.calendar.id: "+aItem.calendar.id);
+        if(aOriginalItem)
+            console.log("aOriginalItem.calendar.id: "+aOriginalItem.calendar.id);*/
+
+        // #8060 Si l'événement isMoving, alors pas de notification d'annulation.
+        if (aOpType == Components.interfaces.calIOperationListener.DELETE && aItem.id != dontNotifyCancelThisId) {
             sendMessage(aItem, "CANCEL", aItem.getAttendees({}), autoResponse);
             return;
-        } // else ADD, MODIFY:
+        }
+        else if(aItem.id == dontNotifyCancelThisId)
+            dontNotifyCancelThisId = "";
+        // else ADD, MODIFY:
 
         let originalAtt = (aOriginalItem ? aOriginalItem.getAttendees({}) : []);
         let itemAtt = aItem.getAttendees({});
@@ -964,10 +982,6 @@ var calitip = {
         let sendOut = true;
         // Check to see if some part of the item was updated, if so, re-send REQUEST
         if (!aOriginalItem || (calitip.compare(aItem, aOriginalItem) > 0)) { // REQUEST
-            // check whether it's a simple UPDATE (no SEQUENCE change) or real (RE)REQUEST,
-            // in case of time or location/description change.
-            let isMinorUpdate = (aOriginalItem && (calitip.getSequence(aItem) == calitip.getSequence(aOriginalItem)));
-
             if (!isMinorUpdate || !cal.item.compareContent(stripUserData(aItem), stripUserData(aOriginalItem))) {
                 let requestItem = aItem.clone();
                 if (!requestItem.organizer) {
@@ -1004,8 +1018,14 @@ var calitip = {
                     recipients = addedAttendees;
                 }
 
-                if (recipients.length > 0) {
+                // #8060 Si l'événement change d'agenda, ET, que l'événement n'a pas de changement majeur, on ne notifie pas.
+                if (recipients.length > 0 && !(isMinorUpdate && isAMovingEvent)) {
                     sendOut = sendMessage(requestItem, "REQUEST", recipients, autoResponse);
+                }
+                else if(recipients.length > 0)
+                {
+                    // #8060 Si on déplace simplement l'évènement, il ne faudra pas notifier les participants pour la suppression non plus.
+                    dontNotifyCancelThisId = aOriginalItem.id;
                 }
             }
         }
