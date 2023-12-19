@@ -173,3 +173,8 @@ pref("calendar.icaljs", false);
 
 // Calendar integration notification
 pref("calendar.integration.notify", false);
+
+// GN - ticket 64 : "Couleurs des événements"
+// 0 : mode par défaut
+// 1 : couleur de fond de l'event avec couleur catégorie, bord de la couleur de l'agenda
+pref("calendar.couleurEvent", 0);

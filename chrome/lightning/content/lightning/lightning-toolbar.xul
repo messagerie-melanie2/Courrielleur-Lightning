@@ -172,6 +172,17 @@
                    label="&lightning.toolbar.rotate.label;"
                    command="calendar_toggle_orientation_command"/>                     
       <!-- Fin CM2V6 -->
+
+      <!-- GN - ticket 64 : "Couleurs des événements" -->
+      <toolbarbutton id="lightning-button-couleur" type="menu"
+                   class="toolbarbutton-1"
+                   label="&lightning.toolbar.couleurEvent.label;">
+        <menupopup onpopupshowing="boutonsCouleur();">
+          <menuitem id="selonAgenda" label="&lightning.toolbar.selonAgenda.label;" oncommand="toggleCouleurEvent('0');"/>
+          <menuitem id="selonCategorie" label="&lightning.toolbar.selonCategorie.label;" oncommand="toggleCouleurEvent('1');"/>
+        </menupopup>
+      </toolbarbutton>
+
     </toolbarpalette>
 
     <toolbar id="calendar-toolbar2" class="inline-toolbar chromeclass-toolbar"
@@ -181,7 +192,7 @@
              customizable="true"
              context="calendar-toolbar-context"
              iconsize="small"
-             defaultset="calendar-synchronize-button,calendar-newevent-button,calendar-newtask-button,calendar-edit-button,calendar-delete-button,separator,calendar-print-button,lightning-button-rotate,separator,spring,calendar-appmenu-button"/>
+             defaultset="calendar-synchronize-button,calendar-newevent-button,calendar-newtask-button,calendar-edit-button,calendar-delete-button,separator,calendar-print-button,lightning-button-rotate,lightning-button-couleur,separator,spring,calendar-appmenu-button"/>
     <toolbarset id="calendarToolbars" context="calendar-toolbar-context"/>
   </toolbox>
 

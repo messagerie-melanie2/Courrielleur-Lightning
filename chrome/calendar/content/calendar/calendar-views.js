@@ -458,6 +458,7 @@ function updateStyleSheetForViews(aCalendar) {
 
     let color = aCalendar.getProperty("color") || "#A8C2E1";
     ruleCache[aCalendar.id].style.backgroundColor = color;
+    ruleCache[aCalendar.id].style.borderColor = color;
     ruleCache[aCalendar.id].style.color = cal.view.getContrastingTextColor(color);
 }
 
@@ -516,17 +517,50 @@ var categoryManagement = {
     categoryStyleCache: {},
 
     updateStyleSheetForCategory: function(aCatName) {
-        if (!(aCatName in this.categoryStyleCache)) {
+
+        let mode=Services.prefs.getIntPref("calendar.couleurEvent", 0);
+        let sheet = getViewStyleSheet();
+        let modif=false;
+
+        if (aCatName in this.categoryStyleCache) {
+          // recherche existante pour remplacement
+          let sheet = getViewStyleSheet();
+          let oldRuleString;// début de cssText uniquement pour rechercher
+          if (mode==1)// on change donc inverser mode/rule
+            oldRuleString = '.category-color-box[categories~="' + aCatName + '"] {';
+          else
+            oldRuleString = '.calendar-color-box[categories~="' + aCatName + '"] {';
+          // recherche oldRuleString
+          //Services.console.logStringMessage("*** updateStyleSheetForCategory recherche oldRuleString:"+oldRuleString);
+          let i=0;
+          for (i=0;i<sheet.cssRules.length;i++){
+            //Services.console.logStringMessage("*** updateStyleSheetForCategory cssText:"+sheet.cssRules[i].cssText);
+            if (sheet.cssRules[i].cssText.startsWith(oldRuleString))
+              break;
+          }
+          if (i<sheet.cssRules.length && 0<sheet.cssRules.length){
+            //Services.console.logStringMessage("*** updateStyleSheetForCategory recherche oldRuleString i="+i);
+            // supprimer ancienne rule
+            sheet.deleteRule(i);
+            modif=true;
+          }
+        }
+
+        if (!(aCatName in this.categoryStyleCache) || modif) {
             // We haven't created a rule for this category yet, do so now.
-            let sheet = getViewStyleSheet();
-            let ruleString = '.category-color-box[categories~="' + aCatName + '"] {} ';
+            //Services.console.logStringMessage("*** updateStyleSheetForCategory ajout ruleString"); 
+            let ruleString;
+            if (mode==0)
+              ruleString = '.category-color-box[categories~="' + aCatName + '"] {} ';
+            else
+              ruleString = '.calendar-color-box[categories~="' + aCatName + '"] {} ';
             let ruleIndex = sheet.insertRule(ruleString, sheet.cssRules.length);
 
             this.categoryStyleCache[aCatName] = sheet.cssRules[ruleIndex];
-        }
 
-        let color = Preferences.get("calendar.category.color." + aCatName) || "";
-        this.categoryStyleCache[aCatName].style.backgroundColor = color;
+            let color = Preferences.get("calendar.category.color." + aCatName) || "";
+            this.categoryStyleCache[aCatName].style.backgroundColor = color;
+        }
     }
 };
 
@@ -789,4 +823,50 @@ var timeIndicator = {
         }
     },
     lastView: null
+};
+
+
+// change le mode de couleur de l'évent avec couleurs agenda/catégories
+// bouton 0 ou 1 => mode couleur
+function toggleCouleurEvent(bouton){
+
+  Services.prefs.setIntPref("calendar.couleurEvent", bouton);
+}
+
+function boutonsCouleur(){
+
+  let mode=Services.prefs.getIntPref("calendar.couleurEvent", 0);
+  document.getElementById("selonAgenda").setAttribute("checked", mode==0);
+  document.getElementById("selonCategorie").setAttribute("checked", mode==1);
+}
+
+
+var couleursModeManager = {
+    QueryInterface: XPCOMUtils.generateQI([Components.interfaces.nsIObserver]),
+
+    initMode: function() {
+
+      //Services.console.logStringMessage("couleursModeManager initMode");
+
+      Services.prefs.addObserver("calendar.couleurEvent", couleursModeManager);
+
+    },
+
+    observe: function(aSubject, aTopic, aPrefName) {
+
+      //Services.console.logStringMessage("observe calendar.couleurEvent");
+
+      categoryPrefBranch = Services.prefs.getBranch("calendar.category.color.");
+      let categories = categoryPrefBranch.getChildList("");
+
+      // Add color information to the stylesheets.
+      categories.forEach(categoryManagement.updateStyleSheetForCategory,
+                          categoryManagement);
+    },
+
+    cleanUp: function(){
+
+        Services.prefs.removeObserver("calendar.couleurEvent", couleursModeManager);
+    }
+
 };

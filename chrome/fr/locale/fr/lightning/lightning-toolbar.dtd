@@ -21,6 +21,12 @@
 <!ENTITY lightning.toolbar.rotate.label     "Rotation">
 <!-- Fin CM2V6 - Bouton rotation -->
 
+<!-- GN - ticket 64 : "Couleurs des événements" -->
+<!ENTITY lightning.toolbar.couleurEvent.label     "Couleurs des événements">
+<!ENTITY lightning.toolbar.selonAgenda.label     "Selon le calendrier">
+<!ENTITY lightning.toolbar.selonCategorie.label     "Selon la catégorie">
+
+
 <!-- Mode Toolbar -->
 <!ENTITY lightning.toolbar.calendar.label     "Agenda">
 <!ENTITY lightning.toolbar.calendar.tooltip   "Aller à l’onglet d’agenda">

@@ -17,7 +17,7 @@
         <xul:hbox>
           <xul:box anonid="event-container"
                    class="calendar-color-box"
-                   xbl:inherits="calendar-uri,calendar-id"
+                   xbl:inherits="calendar-uri,calendar-id,categories"
                    flex="1">
             <xul:box class="calendar-event-selection" orient="horizontal" flex="1">
               <xul:stack anonid="eventbox"

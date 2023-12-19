@@ -69,6 +69,9 @@ function commonInitCalendar() {
      * checking of the calendar readiness (getProperty("ready") ?).
      */
     calendarUpdateNewItemsCommand();
+
+    // init mode couleur des events
+    couleursModeManager.initMode();
 }
 
 /**
@@ -89,6 +92,9 @@ function commonFinishCalendar() {
 
     // Clean up the category colors
     categoryManagement.cleanupCategories();
+
+    // Clean up mode de couleur des events
+    couleursModeManager.cleanUp();
 
     // Clean up window pref observers
     calendarWindowPrefs.cleanup();
