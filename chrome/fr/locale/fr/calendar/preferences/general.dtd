@@ -52,3 +52,6 @@
 <!ENTITY pref.eventsandtasks.label "Évènements et tâches" >
 <!ENTITY pref.editInTab.label "Modifier les évènements et les tâches dans un onglet plutôt que dans une fenêtre de dialogue." >
 <!ENTITY pref.editInTab.accesskey "t">
+
+<!ENTITY pref.itip.notify.label "Envoyer un courriel lors de l'ajout ou modification d'un événement" >
+<!ENTITY pref.itip.notify.accesskey "E" >

@@ -64,6 +64,9 @@
             <preference id="calendar.item.editInTab"
                         name="calendar.item.editInTab"
                         type="bool"/>
+            <preference id="calendar.itip.notify"
+                        name="calendar.itip.notify"
+                        type="bool"/>
         </preferences>
 
         <groupbox>
@@ -303,6 +306,12 @@
                           label="&pref.editInTab.label;"
                           accesskey="&pref.editInTab.accesskey;"
                           preference="calendar.item.editInTab"/>
+            </hbox>
+            <hbox align="center">
+                <checkbox id="itip-notif" pack="end"
+                          label="&pref.itip.notify.label;"
+                          accesskey="&pref.itip.notify.accesskey;"
+                          preference="calendar.itip.notify"/>
             </hbox>
         </groupbox>
     </vbox>
