@@ -119,11 +119,20 @@ var calprint = {
         //itemEvent
         let td=itemNode.querySelector(".itemEvent");
         let categories=item.getCategories({});
+        let couleurAg=item.calendar.getProperty("color")||"transparent";
+        let mode=Services.prefs.getIntPref("calendar.couleurEvent", 0);
+        let styleAjout="";
         if (0<categories.length) {
-          let pref=cal.view.formatStringForCSSRule(categories[0]);
+          let pref=cal.view.formatStringForCSSRule(categories[categories.length-1]);
           let color=Services.prefs.getCharPref("calendar.category.color."+pref, "transparent");
-          td.setAttribute("style", "border-right:solid 8px "+color+";");
+
+          if (mode==0)
+            styleAjout=";border-right:solid 8px "+color+";";
+          else
+            styleAjout=";background-color:"+color+";";
         }
+        td.setAttribute("style", "border-color:"+couleurAg+styleAjout);    
+
 
         // icones
         let imgDoc=document.getElementById("itemEvent-img");

@@ -350,10 +350,17 @@ calTimeDayPrinter.prototype = {
 
     //itemEvent
     let categories=item.getCategories({});
+    let couleurAg=item.calendar.getProperty("color")||"transparent";
+    let style="border-color:"+couleurAg+";";
+    let mode=Services.prefs.getIntPref("calendar.couleurEvent", 0);
     if (0<categories.length) {
-      let pref=cal.view.formatStringForCSSRule(categories[0]);
+      let pref=cal.view.formatStringForCSSRule(categories[categories.length-1]);
       let color=Services.prefs.getCharPref("calendar.category.color."+pref, "transparent");
-      div.setAttribute("style", "border-right:solid 8px "+color+";");
+      
+      if (mode==0)
+        style+="border-right:solid 8px "+color+";";
+      else
+        style+="background-color:"+color+";";
     }
 
     // icones
@@ -382,12 +389,11 @@ calTimeDayPrinter.prototype = {
     }
 
     let rgbaString = hexToRgb(calColor).r+","+hexToRgb(calColor).g+","+hexToRgb(calColor).b;
-
-    let style = "";
+;
     // annulé #6286: Les évts barrés ne sont pas barrés lors de l'impression
     if (item.hasProperty("STATUS") && "CANCELLED"==item.getProperty("STATUS")) 
     {
-        style="text-decoration-line: line-through;background-color:rgba("+rgbaString+",1);";
+        style+="text-decoration-line: line-through;background-color:rgba("+rgbaString+",1);";
     }
 
     // participants
