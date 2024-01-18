@@ -1638,7 +1638,9 @@ ItipItemFinder.prototype = {
         const method = this.mItipItem.receivedMethod.toUpperCase();
         let actionMethod = method;
         let operations = [];
-        if (this.mFoundItems.length > 0) {
+        // #8089 - Si this.mItipItem.identity == null, on est dans le cas d'une liste ou d'un transfert
+        if (this.mFoundItems.length > 0 && this.mItipItem.identity != null)
+        {
             // #7437 Uniquement si on a pas de targetCalendar.
             if(this.mItipItem.targetCalendar == null)
             {
@@ -1952,8 +1954,10 @@ ItipItemFinder.prototype = {
                     rc = Components.results.NS_ERROR_NOT_IMPLEMENTED;
                     break;
             }
-        } else { // not found:
-            cal.LOG("iTIP on " + method + ": no existing items.");
+        }
+        else
+        {
+            cal.LOG("in processFoundItems - No item or identity for method '" + method + "'. Observing target calendar anyway.");
             // If the item was not found, observe the target calendar anyway.
             // It will likely be the composite calendar, so we should update
             // if an item was added or removed
