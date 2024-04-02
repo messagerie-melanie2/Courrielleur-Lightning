@@ -482,7 +482,8 @@ function openEventDialog(calendarItem, calendar, mode, callback, job=null, initi
     // open the dialog modeless
     let url;
     let isEditable = mode == "modify" && !isInvitation && cal.acl.userCanModifyItem(calendarItem);
-    if (cal.acl.isCalendarWritable(calendar) && (mode == "new" || isEditable)) {
+    if (cal.acl.isCalendarWritable(calendar) && (mode == "new" || isEditable) &&
+				"PRIVATE"!=calendarItem.getProperty("CLASS") ) {
         if (args.inTab) {
             url = args.useNewItemUI ? "chrome://lightning/content/html-item-editing/lightning-item-iframe.html"
                                     : "chrome://lightning/content/lightning-item-iframe.xul";
