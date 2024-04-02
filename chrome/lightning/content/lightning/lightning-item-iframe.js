@@ -2089,7 +2089,7 @@ function attachFile() {
 										if (sizelimit/1024/1024 >= 1) sizelimit = roundNumber(sizelimit/1024/1024,1) + " Mo";
 										else sizelimit = roundNumber(sizelimit/1024,1) + " Ko";
 									}
-									else sizelimit+='Octets';
+									else sizelimit+=' Octets';
 									let msg=cal.l10n.getCalString("errorAttachmentSize")+" "+sizelimit
 									alert(msg);
 									gEventStatusFeedback.showStatusString(msg);
@@ -2105,24 +2105,24 @@ function attachFile() {
 function CanAddFileSize(taille){
 
 	let sizelimit=Sizelimit();
-	cal.LOG("*** CanAddFileSize taille:"+taille);
-	cal.LOG("*** CanAddFileSize sizelimit:"+sizelimit);
+	//cal.LOG("*** CanAddFileSize taille:"+taille);
+	//cal.LOG("*** CanAddFileSize sizelimit:"+sizelimit);
 	if (taille > sizelimit) return false;
 	// calcul taille totale
 	let total=taille;
 	for (let id in gAttachMap) {
 		let attach=gAttachMap[id];
 		let size=attach.getParameter("SIZE");
-		cal.LOG("*** CanAddFileSize attach size:"+size);
+		//cal.LOG("*** CanAddFileSize attach size:"+size);
 		total+=parseInt(size);
   }
-	cal.LOG("*** CanAddFileSize total:"+total);
+	//cal.LOG("*** CanAddFileSize total taille:"+total);
 	return sizelimit >= total;
 }
 
 function Sizelimit(){
 
-	return Services.prefs.getIntPref("calendar.attachments.sizelimit", 7864320);
+	return Services.prefs.getIntPref("calendar.attachments.sizelimit", 7500000);
 }
 
 function roundNumber(num, dec) {
