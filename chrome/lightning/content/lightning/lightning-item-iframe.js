@@ -444,7 +444,7 @@ function onEventDialogUnload() {
 function onAccept() {
 
   function rappel(){
-    
+
     dispose();
 
     if (!gWarning) {
@@ -2070,12 +2070,12 @@ function attachFile() {
             		
             		// ... and add the attachment.
             		let size = file.fileSize;
-            		if (size < 5000000) {
+            		//if (size < 5000000) {
+								if (CanAddFileSize(size)) {
               		// ... and add the attachment.
               		let attachment = cal.createAttachment();
               		attachment.rawData = uriSpec;
               		attachment.setParameter("SIZE",size);
-
               
               		// TODO: set the formattype, but this isn't urgent as we don't have
               		// a type sensitive dialog to start files.
@@ -2084,13 +2084,52 @@ function attachFile() {
               		gEventStatusFeedback.showStatusString("");
             		}
             		else {
-              		gEventStatusFeedback.showStatusString(cal.l10n.getCalString("errorAttachmentSize"));
+									let sizelimit=Sizelimit();
+									if (sizelimit/1024 >= 1) {
+										if (sizelimit/1024/1024 >= 1) sizelimit = roundNumber(sizelimit/1024/1024,1) + " Mo";
+										else sizelimit = roundNumber(sizelimit/1024,1) + " Ko";
+									}
+									else sizelimit+='Octets';
+									let msg=cal.l10n.getCalString("errorAttachmentSize")+" "+sizelimit
+									alert(msg);
+									gEventStatusFeedback.showStatusString(msg);
             		}
             }
         }
     });
 }
 // Fin CM2V6
+
+// retour true si un fichier de taille taille peut être ajouté
+// false sinon
+function CanAddFileSize(taille){
+
+	let sizelimit=Sizelimit();
+	cal.LOG("*** CanAddFileSize taille:"+taille);
+	cal.LOG("*** CanAddFileSize sizelimit:"+sizelimit);
+	if (taille > sizelimit) return false;
+	// calcul taille totale
+	let total=taille;
+	for (let id in gAttachMap) {
+		let attach=gAttachMap[id];
+		let size=attach.getParameter("SIZE");
+		cal.LOG("*** CanAddFileSize attach size:"+size);
+		total+=parseInt(size);
+  }
+	cal.LOG("*** CanAddFileSize total:"+total);
+	return sizelimit >= total;
+}
+
+function Sizelimit(){
+
+	return Services.prefs.getIntPref("calendar.attachments.sizelimit", 7864320);
+}
+
+function roundNumber(num, dec) {
+	let result = Math.round(num*Math.pow(10,dec))/Math.pow(10,dec);
+	return result;
+}
+
 
 // CM2V6
 /**
@@ -2223,11 +2262,6 @@ function addAttachment(attachment) {
         return;
     }
     
-    function roundNumber(num, dec) {
-	    let result = Math.round(num*Math.pow(10,dec))/Math.pow(10,dec);
-	    return result;
-    }
-
     // We currently only support uri attachments
     if (attachment.uri) {
         let documentLink = document.getElementById("attachment-link");
@@ -3089,8 +3123,9 @@ function saveEventStatus () {
 // End of the display of the backup of the event in the status bar
 function endEventStatus (aIsError) { 
   window.setCursor("auto");
-  
+
   if (aIsError) {
+		alert(cal.l10n.getCalString("errorSavingCurrentEvent"));
     gEventStatusFeedback.showStatusString(cal.l10n.getCalString("errorSavingCurrentEvent"));
   } else {
     gEventStatusFeedback.showStatusString("");
@@ -3139,7 +3174,7 @@ function onCommandSave(aIsClosing, rappel) {
 
   // CM2V6 - Save status bar
   saveEventStatus();
-  
+ 
   try {
     // Fin CM2V6
     
@@ -3205,6 +3240,7 @@ function onCommandSave(aIsClosing, rappel) {
     let listener = {
         QueryInterface: XPCOMUtils.generateQI([Components.interfaces.calIOperationListener]),
         onOperationComplete: function(aCalendar, aStatus, aOpType, aId, aItem) {
+
             // Check if the current window has a calendarItem first, because in case of undo
             // window refers to the main window and we would get a 'calendarItem is undefined' warning.
             if (!aIsClosing && "calendarItem" in window) {
@@ -3243,6 +3279,10 @@ function onCommandSave(aIsClosing, rappel) {
                   window.calendarItem = originalItem;
                 }
             }
+						else if (!Components.isSuccessCode(aStatus)) {
+							// Communication error when saving event
+							endEventStatus (true);
+						}
             // this triggers the update of the imipbar in case this is a rescheduling case
             if (window.counterProposal && window.counterProposal.onReschedule) {
                 window.counterProposal.onReschedule();
