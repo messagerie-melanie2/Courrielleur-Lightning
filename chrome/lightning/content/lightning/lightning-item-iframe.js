@@ -2105,18 +2105,17 @@ function attachFile() {
 function CanAddFileSize(taille){
 
 	let sizelimit=Sizelimit();
-	//cal.LOG("*** CanAddFileSize taille:"+taille);
-	//cal.LOG("*** CanAddFileSize sizelimit:"+sizelimit);
 	if (taille > sizelimit) return false;
-	// calcul taille totale
+
+	// calcul taille totale (pas les pj déjà téléversées)
 	let total=taille;
 	for (let id in gAttachMap) {
 		let attach=gAttachMap[id];
+		if (!attach['rawData'] || !attach['rawData'].startsWith("file:///")) continue;
 		let size=attach.getParameter("SIZE");
-		//cal.LOG("*** CanAddFileSize attach size:"+size);
+		//Services.console.logStringMessage("*** CanAddFileSize attach size:"+size);
 		total+=parseInt(size);
   }
-	//cal.LOG("*** CanAddFileSize total taille:"+total);
 	return sizelimit >= total;
 }
 
