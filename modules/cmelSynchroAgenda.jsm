@@ -310,7 +310,8 @@ var cmelSynchroAgenda={
     
     this._enveille=true;
     
-    if (0 >= this.cmelVeillemin_w &&
+    if (null!= this._timer &&
+				0 >= this.cmelVeillemin_w &&
         0 >= this.cmelVeillemin_r){
       this._timer.cancel();    
     }
