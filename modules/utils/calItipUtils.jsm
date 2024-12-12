@@ -336,7 +336,10 @@ var calitip = {
             let comparison;
             for (let item of itipItem.getItemList({}))
             {
-                comparison = calitip.compareSequence(item, foundItems[foundItems.length-1]);
+                let originalItem = foundItems[foundItems.length-1];
+                comparison = calitip.compareSequence(item, originalItem);
+				// #8639 Si une des récurrenceInfo est null et pas l'autre, alors on est dans le cadre de la création d'une exception et on ne devrait pas le traiter comme un nouvel événement
+                let isNewException = (item.recurrenceInfo == null) != (originalItem.recurrenceInfo == null);
                 if (comparison == 1)
                 {
                   //#7392 Récurrence: Occurence modifiée (changement d'heure) lorsque le participant accepte l'occurencde le label signal eveneemnt annulé
@@ -346,7 +349,7 @@ var calitip = {
                   data.label = cal.l10n.getLtnString("imipBarCancelText");
                   break;*/
                 }
-                else if (comparison == -1)
+                else if (comparison == -1 && !isNewException)
                 {
                   cal.LOG("in getOptionsText - comparison: "+comparison);
                   data.showItems.push("imipDetailsButton");
