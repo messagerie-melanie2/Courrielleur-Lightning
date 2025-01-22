@@ -48,6 +48,7 @@
     <implementation>
       <constructor><![CDATA[
           ChromeUtils.import("resource://calendar/modules/calUtils.jsm");
+					ChromeUtils.import("resource://gre/modules/Preferences.jsm");
       ]]></constructor>
 
       <field name="_maxCount">0</field>
@@ -175,6 +176,14 @@
             } else {
                 this.selectCategory();
             }
+
+						// ajouter à la liste des catégories de l'agenda pour réutilisation
+						let categoryList = cal.category.fromPrefs();
+						if (!categoryList.includes(category)){
+							categoryList.push(category);
+							let categories = cal.category.arrayToString(categoryList);
+							Preferences.set("calendar.categories.names", categories);
+						}
 
             categoryListbox.ensureElementIsVisible(item);
         ]]></body>
