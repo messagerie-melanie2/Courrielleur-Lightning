@@ -161,7 +161,7 @@ calItipItem.prototype = {
             }
             
           // MI - Ticket 94 : Lorsqu'un evenement est créé à partir de Pablo, celui-ci apparait dans l'Agenda comme libre au lieu de occupé
-          if (item.getProperty("X-OBM-ORIGIN")!=null && null==item.getProperty("STATUS")){
+          if (item.getProperty("X-OBM-DOMAIN")!=null && null==item.getProperty("STATUS")){
             item.setProperty("STATUS", "CONFIRMED");
           }
         }
