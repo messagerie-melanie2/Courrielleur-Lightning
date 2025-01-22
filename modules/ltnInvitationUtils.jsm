@@ -133,6 +133,7 @@ ltn.invitation = {
                         try{content.innerHTML = linkConverter.scanHTML(contentText, mode);}
                         catch (ex){content.innerHTML = contentText;}
                     }
+
                 } else {
                     content.textContent = aContentText;
                 }
@@ -233,13 +234,27 @@ ltn.invitation = {
 
         // ATTACH - we only display URI but no BINARY type attachments here
         let links = [];
+        let fileNames=[];
         let attachments = aEvent.getAttachments({});
         for (let attachment of attachments) {
             if (attachment.uri && attachment.uri.spec != 'about:blank') {
-                links.push(attachment.uri.spec);
+              links.push(attachment.uri.spec);
+              let attachName = attachment.getParameter("X-MOZILLA-CALDAV-ATTACHMENT-NAME");
+              fileNames.push(attachName);
             }
         }
         field("attachments", links.join(" / "), true);
+        // cas piece-jointe modifier nom affiché
+        let attachContent=doc.getElementById("imipHtml-attachments-content");
+        if (attachContent){
+          attachContent.innerHTML=attachContent.innerHTML.replace("> / <", "><br/><");
+          // afficher les nom des pj au lieu des liens
+          let elemsA=attachContent.getElementsByTagName("a");
+          const nb=elemsA.length;
+          for (let i=0;i<nb;i++){
+            if (fileNames[i]) elemsA[i].textContent=fileNames[i];
+          }
+        }
 
         // ATTENDEE and ORGANIZER fields
         let attendees = aEvent.getAttendees({});
@@ -452,8 +467,8 @@ ltn.invitation = {
         // elements to consider for comparison
         let elements = [
             "summary", "location", "when", "canceledOccurrences",
-            "modifiedOccurrences", "organizer", "attendee"
-        ];
+            "modifiedOccurrences", "organizer", "attendee", "attachments"
+        ];;
         elements.forEach(_compareElement);
         return cal.xml.serializeDOM(doc);
     },

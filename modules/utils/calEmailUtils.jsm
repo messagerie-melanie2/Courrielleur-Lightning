@@ -329,6 +329,10 @@
 				   && attachment.encoding
 				   && attachment.getParameter("X-MOZILLA-CALDAV-ATTACHMENT-NAME")) {
 					 let aAttachmentName = attachment.getParameter("X-MOZILLA-CALDAV-ATTACHMENT-NAME");
+
+          // remplacement de ’ (alt 0146) par '
+          aAttachmentName=aAttachmentName.replace(/\u2019/g, "'");
+
 					 mailText += ("--Boundary_(ID_qyG4ZdjoAsiZ+Jo19dCbWQ)\r\n" +
 							  "Content-type: " + attachment.formatType + "; name=" + aAttachmentName + "\r\n" +
 							  "Content-ID: <" + attachment.hashId + ">\r\n" +

@@ -294,6 +294,13 @@ var ltnImipBar = {
         let diff = cal.itip.compare(ltnImipBar.itipItem.getItemList({})[0], ltnImipBar.foundItems[0]);
         // displaying chnages is only needed if that is enabled, an item already exists and there are
         // differences
+
+        // cas piece(s) jointe(s) presente(s) => recalculer diff
+        let pj1={}, pj2={};
+        ltnImipBar.itipItem.getItemList({})[0].getAttachments(pj1);
+        ltnImipBar.foundItems[0].getAttachments(pj2);
+        if (pj1.value!=pj2.value) diff=-1;
+
         if (diff != 0 && Preferences.get("calendar.itip.displayInvitationChanges", false)) {
             let foundOverlay = ltn.invitation.createInvitationOverlay(ltnImipBar.foundItems[0],
                                                                       ltnImipBar.itipItem);

@@ -21,6 +21,8 @@
     <script type="application/javascript"
             src="chrome://calendar/content/calendar-ui-utils.js"/>
 
+    <script type="application/javascript" src="chrome://calendar/content/calendar-cmel-utils.js"/>
+
     <vbox id="messagepanebox">
       <vbox id="singlemessage" insertbefore="msgHeaderView">
         <lightning-notification-bar id="imip-bar"

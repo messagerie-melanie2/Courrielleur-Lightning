@@ -7,4 +7,7 @@
          xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
     <script type="application/javascript" src="chrome://calendar/content/calendar-statusbar.js"/>
     <script type="application/javascript" src="chrome://calendar/content/calendar-item-editing.js"/>
+    <!-- CM2V6 - Status Bar -->
+    <script type="application/javascript" src="chrome://calendar/content/calendar-event-statusbar.js"/>
+
 </overlay>
