@@ -338,7 +338,8 @@ var calendarController = {
                     let focusedRichListbox = cal.view.getParentNodeOrThis(focusedElement, "richlistbox");
                     if (focusedRichListbox && focusedRichListbox.id == "agenda-listbox") {
                         agendaListbox.deleteSelectedItem(false);
-                    } else if (focusedElement && focusedElement.className == "calendar-task-tree") {
+                    //} else if (focusedElement && focusedElement.className == "calendar-task-tree") {
+										} else if (this.isInMode("task")) {
                         deleteToDoCommand(null, false);
                     } else if (this.isInMode("calendar")) {
                         deleteSelectedEvents();
