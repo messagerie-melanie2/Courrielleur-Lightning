@@ -159,6 +159,11 @@ calItipItem.prototype = {
             } else if (item.parentItem.hasProperty("X-MOZ-FAKED-MASTER")) {
                 this.mItemList.push(item);
             }
+            
+          // MI - Ticket 94 : Lorsqu'un evenement est créé à partir de Pablo, celui-ci apparait dans l'Agenda comme libre au lieu de occupé
+          if (item.getProperty("X-OBM-ORIGIN")!=null && null==item.getProperty("STATUS")){
+            item.setProperty("STATUS", "CONFIRMED");
+          }
         }
 
         // We set both methods now for safety's sake. It's the ItipProcessor's
