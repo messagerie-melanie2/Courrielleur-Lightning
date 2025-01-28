@@ -47,6 +47,7 @@ calItipEmailTransport.prototype = {
     },
 
     sendItems: function(aCount, aRecipients, aItipItem) {
+Services.console.logStringMessage("*** sendItems");
         if (this.mHasXpcomMail) {
             cal.LOG("sendItems: Preparing to send an invitation email...");
             let items = this._prepareItems(aItipItem);
@@ -93,18 +94,22 @@ calItipEmailTransport.prototype = {
                 } else {
                     subject = summary;
                 }
+                /*
                 body = cal.l10n.getLtnString(
                     "itipRequestBody",
                     [item.organizer ? item.organizer.toString() : "", summary]
-                );
+                );*/
+                body=this._mceFormateBody(item);
                 break;
             }
             case "CANCEL": {
                 subject = cal.l10n.getLtnString("itipCancelSubject", [summary]);
+                /*
                 body = cal.l10n.getLtnString(
                     "itipCancelBody",
                     [item.organizer ? item.organizer.toString() : "", summary]
-                );
+                );*/
+                body=this._mceFormateBody(item);
                 break;
             }
             case "DECLINECOUNTER": {
@@ -161,7 +166,115 @@ calItipEmailTransport.prototype = {
             body: body
         };
     },
+	
+	// remplacement de %1$S vous a invité à « %2$S »
+    // par détail de l'invitation
+    // appelé par _prepareItems pour la construction de body pour le cas REQUEST
+    // aItem : evenement
+    _mceFormateBody: function(aItem){
 
+      let body="";
+
+      let titre=aItem.getProperty("SUMMARY") || "";
+      if (titre!="") body+=titre+"\r\n\r\n";
+
+      let formatter=cal.getDateFormatter();
+      let dateString=formatter.formatItemInterval(aItem);
+
+      let kDefaultTimezone = cal.dtz.defaultTimezone;
+
+      if (aItem.recurrenceInfo) {
+        // code de ltnInvitationUtils.jsm       
+        let startDate = aItem.startDate;
+        let endDate = aItem.endDate;
+        startDate = startDate ? startDate.getInTimezone(kDefaultTimezone) : null;
+        endDate = endDate ? endDate.getInTimezone(kDefaultTimezone) : null;
+        let repeatString = recurrenceRule2String(aItem.recurrenceInfo, startDate,
+                                                 endDate, startDate.isDate);
+        if (repeatString) {
+          dateString=repeatString;
+        }
+      }
+
+      if (dateString!="") body+=cal.l10n.getLtnString("imipHtml.when")+" "+dateString+"\r\n\r\n";
+
+      if (aItem.recurrenceInfo) {
+        let formattedExDates = [];
+        let modifiedOccurrences = [];
+
+        let dateComptor = function(a, b) {
+            return a.startDate.compare(b.startDate);
+        };
+
+        // Show removed instances
+        for (let exc of aItem.recurrenceInfo.getRecurrenceItems({})) {
+            if (exc instanceof Components.interfaces.calIRecurrenceDate) {
+                if (exc.isNegative) {
+                    // This is an EXDATE
+                    let excDate = exc.date.getInTimezone(kDefaultTimezone);
+                    formattedExDates.push(formatter.formatDateTime(excDate));
+                } else {
+                    // This is an RDATE, close enough to a modified occurrence
+                    let excItem = aItem.recurrenceInfo.getOccurrenceFor(exc.date);
+                    cal.data.binaryInsert(modifiedOccurrences, excItem, dateComptor, true);
+                }
+            }
+        }
+        if (formattedExDates.length > 0) {
+            body+=cal.l10n.getLtnString("imipHtml.canceledOccurrences")+" "+
+                  formattedExDates.join("\r\n")+"\r\n\r\n";
+        }
+
+        // Show modified occurrences
+        for (let recurrenceId of aItem.recurrenceInfo.getExceptionIds({})) {
+            let exc = aItem.recurrenceInfo.getExceptionFor(recurrenceId);
+            let excLocation = exc.getProperty("LOCATION");
+
+            // Only show modified occurrence if start, duration or location
+            // has changed.
+            if (exc.startDate.compare(exc.recurrenceId) != 0 ||
+                exc.duration.compare(aItem.duration) != 0 ||
+                excLocation != aItem.getProperty("LOCATION")) {
+                cal.data.binaryInsert(modifiedOccurrences, exc, dateComptor, true);
+            }
+        }
+
+        let stringifyOcc = function(occ) {
+            let formattedExc = formatter.formatItemInterval(occ);
+            let occLocation = occ.getProperty("LOCATION");
+            if (occLocation != aItem.getProperty("LOCATION")) {
+                let location = cal.l10n.getLtnString("imipHtml.newLocation", [occLocation]);
+                formattedExc += " (" + location + ")";
+            }
+            return formattedExc;
+        };
+
+        if (modifiedOccurrences.length > 0) {
+          body+=cal.l10n.getLtnString("imipHtml.modifiedOccurrences")+" "+
+                modifiedOccurrences.map(stringifyOcc).join("\r\n")+"\r\n\r\n";
+        }
+      }
+
+      let lieu=aItem.getProperty("LOCATION") || "";
+      if (lieu!="") body+=cal.l10n.getLtnString("imipHtml.location")+" "+lieu+"\r\n\r\n";
+
+      let org=aItem.organizer ? aItem.organizer.toString() : ""
+      if (org!="") body+=cal.l10n.getLtnString("imipHtml.organizer")+" "+org+"\r\n\r\n";
+
+      let attendees=aItem.getAttendees({});
+      let parts="";
+      for (let attendee of attendees) {
+        if (parts=="") parts+=attendee.toString();
+        else parts+=', '+attendee.toString();
+      }
+      if (parts!="") body+=cal.l10n.getLtnString("imipHtml.attendees")+" "+parts+"\r\n\r\n";
+
+      let desc=aItem.getProperty("DESCRIPTION") || "";
+      if (desc!="") body+=cal.l10n.getLtnString("imipHtml.description")+" "+desc+"\r\n\r\n";
+
+      return body;
+    },
+	
     _initEmailTransport: function() {
         this.mHasXpcomMail = true;
 
